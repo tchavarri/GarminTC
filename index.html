@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bitácora de carrera — Tomás</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏃</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1115;
+    --surface:#171A1F;
+    --surface-2:#1D2127;
+    --line:#262A31;
+    --text:#F2F3EF;
+    --text-dim:#8B9198;
+    --accent:#FF5A3C;
+    --accent-soft:rgba(255,90,60,0.16);
+    --mint:#45D3A5;
+    --mint-soft:rgba(69,211,165,0.16);
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:1rem;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    font-variant-numeric:tabular-nums;
+    line-height:1.5;
+    padding-bottom:4rem;
+  }
+  a{color:var(--accent);}
+  h1,h2{font-family:'Oswald', sans-serif; margin:0; letter-spacing:0.01em;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 1.5rem;}
+
+  /* Hero */
+  .hero{padding:3.5rem 0 2rem; border-bottom:1px solid var(--line);}
+  .kicker{color:var(--text-dim); font-size:0.95rem; margin:0 0 0.6rem;}
+  .heroNumber{font-size:clamp(3rem, 10vw, 5.5rem); font-weight:700; color:var(--text); line-height:1;}
+  .heroNumber span{color:var(--accent);}
+  .heroSub{color:var(--text-dim); margin-top:0.6rem; font-size:1.05rem; max-width:46ch;}
+
+  .rangeToggle{display:flex; gap:0.5rem; margin-top:1.6rem; flex-wrap:wrap;}
+  .rangeToggle button{
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    font-family:inherit; font-size:0.9rem; padding:0.45rem 0.9rem; cursor:pointer;
+    border-radius:2px; transition:border-color 0.15s, color 0.15s;
+  }
+  .rangeToggle button:hover{color:var(--text); border-color:#3a3f47;}
+  .rangeToggle button.active{color:var(--bg); background:var(--accent); border-color:var(--accent); font-weight:600;}
+  .rangeToggle button:focus-visible{outline:2px solid var(--mint); outline-offset:2px;}
+
+  /* Stat cards */
+  .stats{display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--line); margin-top:2rem; border:1px solid var(--line);}
+  .stat{background:var(--surface); padding:1.2rem 1.3rem;}
+  .statValue{display:block; font-family:'Oswald', sans-serif; font-size:1.9rem; font-weight:600;}
+  .statLabel{display:block; color:var(--text-dim); font-size:0.85rem; margin-top:0.3rem;}
+
+  /* Charts */
+  .charts{display:grid; grid-template-columns:1.3fr 1fr; gap:1px; background:var(--line); margin-top:1px; border:1px solid var(--line); border-top:none;}
+  .chartCard{background:var(--surface); padding:1.4rem 1.4rem 1rem;}
+  .chartCard h2{font-size:1.05rem; font-weight:500; color:var(--text); margin-bottom:1rem;}
+  .chartCard .legendNote{color:var(--text-dim); font-size:0.8rem; margin-top:0.6rem;}
+  .swatch{display:inline-block; width:0.6rem; height:0.6rem; border-radius:50%; margin-right:0.35rem; vertical-align:middle;}
+
+  /* Log table */
+  .log{margin-top:2.5rem;}
+  .log h2{font-size:1.3rem; font-weight:600; margin-bottom:1rem;}
+  .tableWrap{overflow-x:auto; border:1px solid var(--line);}
+  table{width:100%; border-collapse:collapse; font-size:0.92rem; min-width:620px;}
+  thead th{
+    text-align:left; font-weight:500; color:var(--text-dim); font-size:0.82rem;
+    padding:0.7rem 0.9rem; border-bottom:1px solid var(--line); background:var(--surface-2);
+  }
+  tbody td{padding:0.65rem 0.9rem; border-bottom:1px solid var(--line);}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface);}
+  .typeTag{font-size:0.75rem; color:var(--text-dim);}
+  .titleCell{color:var(--text);}
+
+  footer{margin-top:3rem; color:var(--text-dim); font-size:0.85rem;}
+  footer code{background:var(--surface-2); padding:0.1rem 0.4rem; border-radius:2px; color:var(--text);}
+
+  .empty{padding:3rem 0; color:var(--text-dim);}
+
+  @media (max-width:820px){
+    .stats{grid-template-columns:1fr 1fr;}
+    .charts{grid-template-columns:1fr;}
+  }
+  @media (max-width:520px){
+    .stats{grid-template-columns:1fr 1fr;}
+    .hero{padding:2.5rem 0 1.5rem;}
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header class="hero">
+      <p class="kicker">Bitácora de carrera de Tomás</p>
+      <h1 class="heroNumber" id="heroNumber">— km</h1>
+      <p class="heroSub" id="heroSub">Cargando datos de entrenamiento…</p>
+      <div class="rangeToggle" id="rangeToggle">
+        <button data-weeks="4">4 semanas</button>
+        <button data-weeks="8" class="active">8 semanas</button>
+        <button data-weeks="12">12 semanas</button>
+        <button data-weeks="26">26 semanas</button>
+      </div>
+    </header>
+
+    <section class="stats" id="statsGrid">
+      <div class="stat"><span class="statValue" id="statSessions">--</span><span class="statLabel">Carreras en el período</span></div>
+      <div class="stat"><span class="statValue" id="statPace">--</span><span class="statLabel">Ritmo medio</span></div>
+      <div class="stat"><span class="statValue" id="statHr">--</span><span class="statLabel">FC media</span></div>
+      <div class="stat"><span class="statValue" id="statElev">--</span><span class="statLabel">Desnivel acumulado</span></div>
+    </section>
+
+    <section class="charts">
+      <div class="chartCard">
+        <h2>Volumen semanal</h2>
+        <canvas id="volumeChart" height="230"></canvas>
+      </div>
+      <div class="chartCard">
+        <h2>Ritmo y frecuencia cardíaca por carrera</h2>
+        <canvas id="paceChart" height="230"></canvas>
+        <p class="legendNote"><span class="swatch" style="background:var(--accent)"></span>Ritmo (min/km, eje izq.) &nbsp; <span class="swatch" style="background:var(--mint)"></span>FC media (eje der.)</p>
+      </div>
+    </section>
+
+    <section class="log">
+      <h2>Actividades recientes</h2>
+      <div class="tableWrap">
+        <table>
+          <thead>
+            <tr><th>Fecha</th><th>Actividad</th><th>Distancia</th><th>Ritmo</th><th>FC media</th><th>Desnivel</th></tr>
+          </thead>
+          <tbody id="logBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer id="footerNote">
+      <p>Los datos se leen directamente desde <code>data/activities.csv</code>. Para actualizar, exporta tus actividades desde Garmin Connect, reemplaza ese archivo en el repositorio y vuelve a publicar en GitHub Pages.</p>
+    </footer>
+  </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<script>
+(function(){
+  "use strict";
+
+  var CSV_PATH = "data/activities.csv";
+  var state = { rows: [], weeks: 8, volumeChart: null, paceChart: null };
+
+  function num(v){
+    if (v === undefined || v === null) return null;
+    var s = String(v).trim();
+    if (s === "" || s === "--") return null;
+    var n = parseFloat(s.replace(/,/g, ""));
+    return isNaN(n) ? null : n;
+  }
+
+  function toSeconds(v){
+    if (v === undefined || v === null) return null;
+    var s = String(v).trim();
+    if (s === "" || s === "--") return null;
+    var bits = s.split(":").map(Number);
+    if (bits.some(function(b){ return isNaN(b); })) return null;
+    if (bits.length === 3) return bits[0]*3600 + bits[1]*60 + bits[2];
+    if (bits.length === 2) return bits[0]*60 + bits[1];
+    return null;
+  }
+
+  function cleanRow(r){
+    var dateStr = r["Fecha"];
+    var date = dateStr ? new Date(dateStr.replace(" ", "T")) : null;
+    if (date && isNaN(date.getTime())) date = null;
+    return {
+      type: (r["Tipo de actividad"] || "").trim(),
+      date: date,
+      title: (r["Título"] || "").trim(),
+      distanceKm: num(r["Distancia"]),
+      calories: num(r["Calorías"]),
+      durationSec: toSeconds(r["Tiempo"]),
+      avgHr: num(r["Frecuencia cardiaca media"]),
+      maxHr: num(r["FC máxima"]),
+      cadence: num(r["Cadencia de carrera media"]),
+      paceSecPerKm: toSeconds(r["Ritmo medio"]),
+      elevGain: num(r["Ascenso total"]),
+      steps: num(r["Pasos"])
+    };
+  }
+
+  function startOfWeek(d){
+    var x = new Date(d);
+    x.setHours(0,0,0,0);
+    var day = (x.getDay() + 6) % 7; // lunes = 0
+    x.setDate(x.getDate() - day);
+    return x;
+  }
+
+  function weeksAgo(date){
+    var now = startOfWeek(new Date());
+    var then = startOfWeek(date);
+    return Math.round((now - then) / (7*24*3600*1000));
+  }
+
+  function fmtKm(x){ return (x == null) ? "--" : (Math.round(x*10)/10).toLocaleString("es-CL") + " km"; }
+  function fmtPace(sec){
+    if (sec == null || !isFinite(sec)) return "--";
+    var m = Math.floor(sec/60), s = Math.round(sec%60);
+    return m + ":" + (s < 10 ? "0" : "") + s + " /km";
+  }
+  function fmtDateShort(d){ return new Intl.DateTimeFormat("es-CL", {day:"numeric", month:"short"}).format(d); }
+  function fmtDateFull(d){ return new Intl.DateTimeFormat("es-CL", {day:"numeric", month:"long", year:"numeric"}).format(d); }
+
+  function inRange(row, weeksCount){
+    if (!row.date) return false;
+    var wa = weeksAgo(row.date);
+    return wa >= 0 && wa < weeksCount;
+  }
+
+  function buildWeeklyBuckets(rows, weeksCount){
+    var buckets = [];
+    for (var i = 0; i < weeksCount; i++){
+      var wa = weeksCount - 1 - i;
+      var start = startOfWeek(new Date());
+      start.setDate(start.getDate() - wa*7);
+      buckets.push({ start: start, km: 0, sessions: 0 });
+    }
+    rows.forEach(function(r){
+      if (r.type !== "Carrera" || !r.date || r.distanceKm == null) return;
+      var wa = weeksAgo(r.date);
+      if (wa >= 0 && wa < weeksCount){
+        var idx = weeksCount - 1 - wa;
+        buckets[idx].km += r.distanceKm;
+        buckets[idx].sessions += 1;
+      }
+    });
+    return buckets;
+  }
+
+  function chartTheme(){
+    return {
+      grid: "rgba(255,255,255,0.06)",
+      tick: "#8B9198",
+      accent: "#FF5A3C",
+      accentSoft: "rgba(255,90,60,0.25)",
+      mint: "#45D3A5"
+    };
+  }
+
+  function renderVolumeChart(buckets){
+    var t = chartTheme();
+    var labels = buckets.map(function(b){ return fmtDateShort(b.start); });
+    var data = buckets.map(function(b){ return Math.round(b.km*10)/10; });
+    var ctx = document.getElementById("volumeChart");
+
+    if (state.volumeChart){
+      state.volumeChart.data.labels = labels;
+      state.volumeChart.data.datasets[0].data = data;
+      state.volumeChart.update();
+      return;
+    }
+    state.volumeChart = new Chart(ctx, {
+      type: "bar",
+      data: { labels: labels, datasets: [{ label: "km", data: data, backgroundColor: t.accentSoft, borderColor: t.accent, borderWidth: 1.5, borderRadius: 2, maxBarThickness: 34 }] },
+      options: {
+        responsive: true,
+        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function(c){ return c.parsed.y + " km"; } } } },
+        scales: {
+          x: { grid: { display:false }, ticks: { color: t.tick, font: { family: "IBM Plex Sans", size: 11 } } },
+          y: { beginAtZero:true, grid: { color: t.grid }, ticks: { color: t.tick, font: { family: "IBM Plex Sans", size: 11 } } }
+        }
+      }
+    });
+  }
+
+  function renderPaceChart(rows, weeksCount){
+    var t = chartTheme();
+    var runs = rows.filter(function(r){ return r.type === "Carrera" && r.distanceKm >= 2 && r.paceSecPerKm && inRange(r, weeksCount); })
+                    .sort(function(a,b){ return a.date - b.date; });
+
+    var labels = runs.map(function(r){ return fmtDateShort(r.date); });
+    var paceData = runs.map(function(r){ return Math.round((r.paceSecPerKm/60)*100)/100; });
+    var hrData = runs.map(function(r){ return r.avgHr; });
+
+    var ctx = document.getElementById("paceChart");
+    if (state.paceChart){
+      state.paceChart.data.labels = labels;
+      state.paceChart.data.datasets[0].data = paceData;
+      state.paceChart.data.datasets[1].data = hrData;
+      state.paceChart.update();
+      return;
+    }
+    state.paceChart = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          {
+            label: "Ritmo (min/km)", data: paceData, yAxisID: "yPace",
+            borderColor: t.accent, backgroundColor: t.accent, pointRadius: 3, pointHoverRadius: 5,
+            tension: 0.25, borderWidth: 2
+          },
+          {
+            label: "FC media", data: hrData, yAxisID: "yHr",
+            borderColor: t.mint, backgroundColor: t.mint, pointRadius: 3, pointHoverRadius: 5,
+            tension: 0.25, borderWidth: 2, borderDash: [4,3]
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: function(c){
+            if (c.dataset.yAxisID === "yPace") return "Ritmo: " + fmtPace(c.parsed.y*60);
+            return "FC media: " + c.parsed.y + " ppm";
+          } } }
+        },
+        scales: {
+          x: { grid: { display:false }, ticks: { color: t.tick, font: { family:"IBM Plex Sans", size: 11 }, maxRotation: 0, autoSkip: true, maxTicksLimit: 8 } },
+          yPace: { reverse: true, position:"left", grid: { color: t.grid }, ticks: { color: t.tick, callback: function(v){ return fmtPace(v*60); } } },
+          yHr: { position:"right", grid: { display:false }, ticks: { color: t.tick } }
+        }
+      }
+    });
+  }
+
+  function renderStats(rows, weeksCount){
+    var runs = rows.filter(function(r){ return r.type === "Carrera" && inRange(r, weeksCount); });
+    var totalKm = runs.reduce(function(s,r){ return s + (r.distanceKm || 0); }, 0);
+    var sessions = runs.length;
+
+    var withPace = runs.filter(function(r){ return r.paceSecPerKm && r.distanceKm; });
+    var weightedPace = withPace.length
+      ? withPace.reduce(function(s,r){ return s + r.paceSecPerKm*r.distanceKm; }, 0) / withPace.reduce(function(s,r){ return s + r.distanceKm; }, 0)
+      : null;
+
+    var withHr = runs.filter(function(r){ return r.avgHr; });
+    var avgHr = withHr.length ? Math.round(withHr.reduce(function(s,r){ return s + r.avgHr; }, 0) / withHr.length) : null;
+
+    var elevTotal = runs.reduce(function(s,r){ return s + (r.elevGain || 0); }, 0);
+
+    document.getElementById("statSessions").textContent = sessions;
+    document.getElementById("statPace").textContent = weightedPace ? fmtPace(weightedPace) : "--";
+    document.getElementById("statHr").textContent = avgHr ? avgHr + " ppm" : "--";
+    document.getElementById("statElev").textContent = Math.round(elevTotal) + " m";
+
+    var heroNumber = document.getElementById("heroNumber");
+    heroNumber.innerHTML = (Math.round(totalKm*10)/10).toLocaleString("es-CL") + " <span>km</span>";
+
+    var lastRun = rows.filter(function(r){ return r.type === "Carrera"; }).sort(function(a,b){ return b.date - a.date; })[0];
+    var sub = "En las últimas " + weeksCount + " semanas.";
+    if (lastRun){
+      sub += " Última carrera: " + lastRun.title + " el " + fmtDateFull(lastRun.date) +
+             " (" + fmtKm(lastRun.distanceKm) + (lastRun.paceSecPerKm ? " a " + fmtPace(lastRun.paceSecPerKm) : "") + ").";
+    }
+    document.getElementById("heroSub").textContent = sub;
+  }
+
+  function renderTable(rows){
+    var body = document.getElementById("logBody");
+    var recent = rows.filter(function(r){ return r.date; }).sort(function(a,b){ return b.date - a.date; }).slice(0, 15);
+    body.innerHTML = recent.map(function(r){
+      return "<tr>" +
+        "<td>" + fmtDateShort(r.date) + "</td>" +
+        "<td class='titleCell'>" + (r.title || "—") + "<br><span class='typeTag'>" + r.type + "</span></td>" +
+        "<td>" + (r.type === "Carrera" ? fmtKm(r.distanceKm) : "—") + "</td>" +
+        "<td>" + (r.type === "Carrera" ? fmtPace(r.paceSecPerKm) : "—") + "</td>" +
+        "<td>" + (r.avgHr ? r.avgHr + " ppm" : "—") + "</td>" +
+        "<td>" + (r.type === "Carrera" && r.elevGain != null ? Math.round(r.elevGain) + " m" : "—") + "</td>" +
+      "</tr>";
+    }).join("");
+  }
+
+  function render(){
+    var buckets = buildWeeklyBuckets(state.rows, state.weeks);
+    renderVolumeChart(buckets);
+    renderPaceChart(state.rows, state.weeks);
+    renderStats(state.rows, state.weeks);
+    renderTable(state.rows);
+  }
+
+  function showEmptyState(msg){
+    document.querySelector(".wrap").innerHTML =
+      "<div class='empty'><h2>No se pudieron cargar los datos</h2><p>" + msg + "</p></div>";
+  }
+
+  fetch(CSV_PATH)
+    .then(function(res){
+      if (!res.ok) throw new Error("No se encontró " + CSV_PATH);
+      return res.text();
+    })
+    .then(function(text){
+      var parsed = Papa.parse(text, { header: true, skipEmptyLines: true });
+      state.rows = parsed.data.map(cleanRow).filter(function(r){ return r.date; });
+      if (!state.rows.length){
+        showEmptyState("El archivo se leyó pero no contiene filas válidas.");
+        return;
+      }
+      render();
+      document.querySelectorAll("#rangeToggle button").forEach(function(btn){
+        btn.addEventListener("click", function(){
+          document.querySelectorAll("#rangeToggle button").forEach(function(b){ b.classList.remove("active"); });
+          btn.classList.add("active");
+          state.weeks = Number(btn.dataset.weeks);
+          render();
+        });
+      });
+    })
+    .catch(function(err){
+      showEmptyState("Revisa que <code>data/activities.csv</code> exista en el mismo repositorio y que estés viendo esta página publicada en GitHub Pages (abrir el archivo directamente con doble clic no funciona por restricciones del navegador). Detalle: " + err.message);
+    });
+})();
+</script>
+</body>
+</html>
