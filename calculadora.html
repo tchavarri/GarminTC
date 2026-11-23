@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculadora de ritmos — Bitácora de carrera</title>
+<meta name="description" content="Calcula tiempo, ritmo (min/km) y velocidad (km/h) para 5K, 10K, media maratón, maratón o cualquier distancia, con parciales por kilómetro.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⏱️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1115;
+    --surface:#171A1F;
+    --surface-2:#1D2127;
+    --line:#262A31;
+    --text:#F2F3EF;
+    --text-dim:#8B9198;
+    --accent:#FF5A3C;
+    --accent-soft:rgba(255,90,60,0.16);
+    --mint:#45D3A5;
+    --mint-soft:rgba(69,211,165,0.16);
+    --warn:#F2C94C;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-padding-top:1rem;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    font-variant-numeric:tabular-nums; line-height:1.5; padding-bottom:4rem;
+  }
+  a{color:var(--accent);}
+  h1,h2,h3{font-family:'Oswald', sans-serif; margin:0; letter-spacing:0.01em;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 1.5rem;}
+
+  /* Hero */
+  .hero{padding:3rem 0 1.8rem; border-bottom:1px solid var(--line);}
+  .kicker{color:var(--text-dim); font-size:0.95rem; margin:0 0 0.6rem;}
+  .kicker a{color:var(--text-dim); text-decoration:none; border-bottom:1px solid var(--line);}
+  .kicker a:hover{color:var(--text); border-color:var(--text-dim);}
+  .heroTitle{font-size:clamp(2.4rem, 8vw, 4rem); font-weight:700; line-height:1.05;}
+  .heroTitle span{color:var(--accent);}
+  .heroSub{color:var(--text-dim); margin-top:0.7rem; font-size:1.02rem; max-width:60ch;}
+
+  /* Calculator panel */
+  .calc{margin-top:2rem; border:1px solid var(--line); background:var(--surface); padding:1.5rem;}
+  .fieldLabel{display:block; color:var(--text-dim); font-size:0.8rem; margin-bottom:0.5rem;}
+  .chips{display:flex; flex-wrap:wrap; gap:0.5rem;}
+  .chip{
+    display:inline-flex; align-items:center; background:transparent;
+    border:1px solid var(--line); color:var(--text-dim); font-family:inherit; font-size:0.9rem;
+    padding:0.45rem 0.9rem; border-radius:2px; cursor:pointer; transition:border-color 0.15s, color 0.15s;
+  }
+  .chip:hover{color:var(--text); border-color:#3a3f47;}
+  .chip[aria-pressed="true"]{color:var(--bg); background:var(--accent); border-color:var(--accent); font-weight:600;}
+  .chip:focus-visible, .tabBtn:focus-visible, .btn:focus-visible{outline:2px solid var(--mint); outline-offset:2px;}
+
+  .customDist{display:none; margin-top:0.9rem; align-items:center; gap:0.6rem;}
+  .customDist.show{display:flex;}
+  .customDist span{color:var(--text-dim); font-size:0.9rem;}
+
+  input[type=text], input[type=time], select{
+    background:var(--bg); border:1px solid var(--line); color:var(--text);
+    font-family:inherit; font-size:1rem; padding:0.5rem 0.7rem; border-radius:2px;
+  }
+  input:focus-visible, select:focus-visible{outline:2px solid var(--mint); outline-offset:1px; border-color:var(--mint);}
+  select{cursor:pointer;}
+  select:disabled{opacity:0.45; cursor:not-allowed;}
+
+  .fieldGrid{display:grid; grid-template-columns:1.3fr 1fr 1fr; gap:1.6rem; margin-top:1.6rem;}
+  .boxes{display:flex; align-items:center; gap:0.4rem;}
+  .boxes .sep{color:var(--text-dim); font-family:'Oswald', sans-serif; font-size:1.4rem;}
+  .boxes .unit{color:var(--text-dim); font-size:0.85rem; margin-left:0.3rem;}
+  .num{
+    font-family:'Oswald', sans-serif !important; font-size:1.6rem !important; font-weight:500;
+    text-align:center; width:4rem; padding:0.35rem 0.2rem !important;
+  }
+  .num.wide{width:6.2rem;}
+  .hint{color:var(--text-dim); font-size:0.78rem; margin-top:0.4rem;}
+
+  .actions{display:flex; flex-wrap:wrap; gap:0.7rem; margin-top:1.5rem; align-items:center;}
+  .btn{
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    font-family:inherit; font-size:0.9rem; padding:0.45rem 0.9rem; cursor:pointer; border-radius:2px;
+  }
+  .btn:hover{color:var(--text); border-color:#3a3f47;}
+  .status{min-height:1.4rem; margin-top:0.9rem; font-size:0.88rem; color:var(--warn);}
+
+  /* Results */
+  .sectionLabel{color:var(--text-dim); font-size:0.85rem; margin:2rem 0 0.6rem;}
+  .stats{display:grid; grid-template-columns:repeat(4, 1fr); gap:1px; background:var(--line); border:1px solid var(--line);}
+  .stats.five{grid-template-columns:repeat(6, 1fr);}
+  .stat{background:var(--surface); padding:1.2rem 1.3rem;}
+  .statValue{display:block; font-family:'Oswald', sans-serif; font-size:1.9rem; font-weight:600;}
+  .statValue.small{font-size:1.35rem;}
+  .statValue .u{font-size:0.9rem; font-weight:400; color:var(--text-dim); margin-left:0.25rem;}
+  .statLabel{display:block; color:var(--text-dim); font-size:0.85rem; margin-top:0.3rem;}
+  .empty{padding:2.5rem 0 0; color:var(--text-dim);}
+
+  /* Plan */
+  .plan{margin-top:2.5rem;}
+  .plan h2, .equiv h2{font-size:1.3rem; font-weight:600; margin-bottom:0.3rem;}
+  .planNote{color:var(--text-dim); font-size:0.9rem; margin-bottom:1rem;}
+  .planControls{display:flex; flex-wrap:wrap; gap:1.4rem; align-items:flex-end; margin-bottom:1rem;}
+  .tabs{display:flex; gap:0.5rem; margin:1rem 0 0.8rem; flex-wrap:wrap;}
+  .tabBtn{
+    background:transparent; border:1px solid var(--line); color:var(--text-dim);
+    font-family:inherit; font-size:0.9rem; padding:0.45rem 0.9rem; cursor:pointer; border-radius:2px;
+  }
+  .tabBtn[aria-selected="true"]{color:var(--text); border-color:var(--mint);}
+  .tableWrap{overflow-x:auto; border:1px solid var(--line);}
+  table{width:100%; border-collapse:collapse; font-size:0.92rem;}
+  thead th{
+    text-align:left; font-weight:500; color:var(--text-dim); font-size:0.82rem;
+    padding:0.7rem 0.9rem; border-bottom:1px solid var(--line); background:var(--surface-2); white-space:nowrap;
+  }
+  tbody td{padding:0.55rem 0.9rem; border-bottom:1px solid var(--line); white-space:nowrap;}
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:var(--surface);}
+  tr.mark td{background:rgba(69,211,165,0.06);}
+  tr.mark td:first-child{box-shadow:inset 3px 0 0 var(--mint); font-weight:600;}
+  tr.finish td{background:rgba(255,90,60,0.09); font-weight:600;}
+  tr.finish td:first-child{box-shadow:inset 3px 0 0 var(--accent);}
+  tr.nearest td{background:var(--accent-soft);}
+  tr.clickable{cursor:pointer;}
+  .dim{color:var(--text-dim);}
+  .tableMax{max-height:520px; overflow-y:auto;}
+  .tableMax thead th{position:sticky; top:0;}
+
+  details.equiv{margin-top:2.5rem; border:1px solid var(--line); background:var(--surface);}
+  details.equiv summary{cursor:pointer; padding:1rem 1.2rem; font-family:'Oswald', sans-serif; font-size:1.15rem; font-weight:500; list-style-position:inside;}
+  details.equiv summary:focus-visible{outline:2px solid var(--mint); outline-offset:-2px;}
+  details.equiv .inner{padding:0 1.2rem 1.2rem;}
+
+  footer{margin-top:3rem; color:var(--text-dim); font-size:0.85rem;}
+
+  @media (max-width:760px){
+    .wrap{padding:0 1rem;}
+    .calc{padding:1.1rem;}
+    .fieldGrid{grid-template-columns:1fr; gap:1.3rem;}
+    .stats, .stats.five{grid-template-columns:repeat(2, 1fr);}
+    .stat{padding:1rem;}
+    .statValue{font-size:1.6rem;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="kicker"><a href="index.html">← Bitácora de carrera de Tomás</a></p>
+    <h1 class="heroTitle">Calculadora de <span>ritmos</span></h1>
+    <p class="heroSub">Elige la distancia y completa <strong>uno</strong> de los tres datos: tiempo, ritmo o velocidad. Los otros dos se calculan solos, junto con los parciales de la carrera.</p>
+  </header>
+
+  <noscript><p class="empty">Esta calculadora necesita JavaScript activado.</p></noscript>
+
+  <section class="calc" aria-label="Calculadora">
+    <span class="fieldLabel" id="distLabel">Distancia</span>
+    <div class="chips" id="distChips" role="group" aria-labelledby="distLabel"></div>
+    <div class="customDist" id="customDist">
+      <label for="customKm" class="fieldLabel" style="margin:0">Kilómetros</label>
+      <input type="text" id="customKm" inputmode="decimal" autocomplete="off" placeholder="ej. 12,5" size="8" aria-describedby="customHint">
+      <span id="customHint">máximo 300 km</span>
+    </div>
+
+    <div class="fieldGrid">
+      <div>
+        <span class="fieldLabel" id="timeLabel">Tiempo</span>
+        <div class="boxes" role="group" aria-labelledby="timeLabel">
+          <input type="text" class="num" id="tH" inputmode="numeric" maxlength="3" placeholder="h" aria-label="Horas" autocomplete="off">
+          <span class="sep">:</span>
+          <input type="text" class="num" id="tM" inputmode="numeric" maxlength="2" placeholder="min" aria-label="Minutos" autocomplete="off">
+          <span class="sep">:</span>
+          <input type="text" class="num" id="tS" inputmode="numeric" maxlength="2" placeholder="seg" aria-label="Segundos" autocomplete="off">
+        </div>
+        <p class="hint">horas : minutos : segundos</p>
+      </div>
+      <div>
+        <span class="fieldLabel" id="paceLabel">Ritmo</span>
+        <div class="boxes" role="group" aria-labelledby="paceLabel">
+          <input type="text" class="num" id="pM" inputmode="numeric" maxlength="2" placeholder="min" aria-label="Minutos por kilómetro" autocomplete="off">
+          <span class="sep">:</span>
+          <input type="text" class="num" id="pS" inputmode="numeric" maxlength="2" placeholder="seg" aria-label="Segundos por kilómetro" autocomplete="off">
+          <span class="unit">/km</span>
+        </div>
+        <p class="hint">minutos : segundos por kilómetro</p>
+      </div>
+      <div>
+        <label class="fieldLabel" for="speed">Velocidad</label>
+        <div class="boxes">
+          <input type="text" class="num wide" id="speed" inputmode="decimal" placeholder="km/h" autocomplete="off">
+          <span class="unit">km/h</span>
+        </div>
+        <p class="hint">ej. 12,5 (se acepta coma o punto)</p>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn" id="clearBtn">Borrar datos</button>
+      <button type="button" class="btn" id="copyBtn">Copiar plan</button>
+      <span class="hint" id="copyMsg" role="status" style="margin:0"></span>
+    </div>
+    <p class="status" id="status" role="status" aria-live="polite"></p>
+  </section>
+
+  <p class="empty" id="emptyMsg" hidden>Ingresa la distancia y uno de los tres datos (tiempo, ritmo o velocidad) para ver los resultados.</p>
+
+  <div id="results">
+    <p class="sectionLabel">Resultado</p>
+    <section class="stats" id="mainStats">
+      <div class="stat"><span class="statValue" id="rTime">--</span><span class="statLabel">Tiempo final</span></div>
+      <div class="stat"><span class="statValue" id="rPace">--</span><span class="statLabel">Ritmo por kilómetro</span></div>
+      <div class="stat"><span class="statValue" id="rSpeed">--</span><span class="statLabel">Velocidad</span></div>
+      <div class="stat"><span class="statValue" id="rMile">--</span><span class="statLabel">Ritmo por milla</span></div>
+    </section>
+
+    <p class="sectionLabel">Tiempos de pista a este ritmo</p>
+    <section class="stats five" id="trackStats">
+      <div class="stat"><span class="statValue small" id="k100">--</span><span class="statLabel">100 m</span></div>
+      <div class="stat"><span class="statValue small" id="k200">--</span><span class="statLabel">200 m</span></div>
+      <div class="stat"><span class="statValue small" id="k400">--</span><span class="statLabel">400 m</span></div>
+      <div class="stat"><span class="statValue small" id="k800">--</span><span class="statLabel">800 m</span></div>
+      <div class="stat"><span class="statValue small" id="k1000">--</span><span class="statLabel">1.000 m</span></div>
+      <div class="stat"><span class="statValue small" id="k1600">--</span><span class="statLabel">1.600 m</span></div>
+    </section>
+
+    <section class="plan">
+      <h2>Plan de carrera</h2>
+      <p class="planNote" id="planNote">—</p>
+      <div class="planControls">
+        <div>
+          <span class="fieldLabel" id="stratLabel">Estrategia</span>
+          <div class="chips" id="stratChips" role="group" aria-labelledby="stratLabel">
+            <button type="button" class="chip" data-strat="even" aria-pressed="true">Ritmo parejo</button>
+            <button type="button" class="chip" data-strat="negative" aria-pressed="false">Negativo (2.ª mitad más rápida)</button>
+            <button type="button" class="chip" data-strat="positive" aria-pressed="false">Positivo (2.ª mitad más lenta)</button>
+          </div>
+        </div>
+        <div>
+          <label class="fieldLabel" for="diff">Diferencia entre mitades</label>
+          <select id="diff" disabled>
+            <option value="0.01">1 %</option>
+            <option value="0.02" selected>2 %</option>
+            <option value="0.03">3 %</option>
+            <option value="0.05">5 %</option>
+          </select>
+        </div>
+        <div>
+          <label class="fieldLabel" for="startTime">Hora de salida (opcional)</label>
+          <input type="time" id="startTime">
+        </div>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="Tipo de parciales">
+        <button type="button" class="tabBtn" role="tab" id="tabKm" aria-selected="true" aria-controls="panelKm">Parciales por km</button>
+        <button type="button" class="tabBtn" role="tab" id="tabMin" aria-selected="false" aria-controls="panelMin">Km cada 5 minutos</button>
+      </div>
+      <div id="panelKm" role="tabpanel" aria-labelledby="tabKm">
+        <div class="tableWrap tableMax"><table>
+          <thead><tr><th>Km</th><th>Ritmo</th><th>Parcial</th><th>Acumulado</th><th class="clockCol">Hora</th></tr></thead>
+          <tbody id="splitsBody"></tbody>
+        </table></div>
+      </div>
+      <div id="panelMin" role="tabpanel" aria-labelledby="tabMin" hidden>
+        <div class="tableWrap tableMax"><table>
+          <thead><tr><th>Tiempo</th><th>Kilómetro</th><th>Ritmo en ese tramo</th><th class="clockCol">Hora</th></tr></thead>
+          <tbody id="minBody"></tbody>
+        </table></div>
+      </div>
+    </section>
+  </div>
+
+  <details class="equiv" id="equivBox">
+    <summary>Tabla de equivalencias: ritmo, velocidad y marcas</summary>
+    <div class="inner">
+      <p class="planNote">Toca una fila para usar ese ritmo en la calculadora. Se resalta la más cercana a tu ritmo actual.</p>
+      <div class="tableWrap tableMax"><table>
+        <thead><tr><th>Ritmo /km</th><th>km/h</th><th>5K</th><th>10K</th><th>Media maratón</th><th>Maratón</th></tr></thead>
+        <tbody id="equivBody"></tbody>
+      </table></div>
+    </div>
+  </details>
+
+  <footer>
+    <p>Las marcas de media maratón y maratón usan las distancias oficiales (21,0975 km y 42,195 km). Con estrategia negativa o positiva, cada mitad se corre a un ritmo constante y el promedio de ambas es el ritmo elegido, así que el tiempo final no cambia. Tu reloj puede marcar algo más de distancia que la oficial, por ejemplo 21,2–21,4 km en una media: guíate por los letreros del recorrido.</p>
+    <p><a href="index.html">Volver a la Bitácora de carrera</a></p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  var PRESETS = [
+    { id: "5k",  label: "5K",            km: 5 },
+    { id: "10k", label: "10K",           km: 10 },
+    { id: "15k", label: "15K",           km: 15 },
+    { id: "21k", label: "Media maratón", km: 21.0975 },
+    { id: "42k", label: "Maratón",       km: 42.195 },
+    { id: "custom", label: "Otra",       km: null }
+  ];
+  var MILE_KM = 1.609344;
+  var MIN_PACE = 90;     // 1:30 /km
+  var MAX_PACE = 1800;   // 30:00 /km
+  var MAX_KM = 300;
+
+  // Estado canónico: distancia + ritmo (segundos por km). Todo lo demás se deriva.
+  var state = { presetId: "21k", distKm: 21.0975, paceSec: 300, strategy: "even", diff: 0.02, tab: "km" };
+
+  function $(id){ return document.getElementById(id); }
+  var el = {
+    distChips: $("distChips"), customDist: $("customDist"), customKm: $("customKm"),
+    tH: $("tH"), tM: $("tM"), tS: $("tS"), pM: $("pM"), pS: $("pS"), speed: $("speed"),
+    status: $("status"), results: $("results"), emptyMsg: $("emptyMsg"),
+    stratChips: $("stratChips"), diff: $("diff"), startTime: $("startTime"),
+    planNote: $("planNote"), splitsBody: $("splitsBody"), minBody: $("minBody"), equivBody: $("equivBody"),
+    copyMsg: $("copyMsg")
+  };
+
+  /* ---------- Formato ---------- */
+  function pad2(n){ return (n < 10 ? "0" : "") + n; }
+  function fmtNum(n, min, max){
+    return n.toLocaleString("es-CL", { minimumFractionDigits: min, maximumFractionDigits: max });
+  }
+  function fmtHMS(sec){
+    var s = Math.round(sec), h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), r = s % 60;
+    return h > 0 ? h + ":" + pad2(m) + ":" + pad2(r) : m + ":" + pad2(r);
+  }
+  function fmtPace(sec){
+    var s = Math.round(sec);
+    return Math.floor(s / 60) + ":" + pad2(s % 60);
+  }
+  function fmtTrack(sec){
+    var t = Math.round(sec * 10), m = Math.floor(t / 600), s = Math.floor((t % 600) / 10), d = t % 10;
+    return m + ":" + pad2(s) + "," + d;
+  }
+  function fmtKm(x){ return fmtNum(x, 0, 4); }
+  function fmtClock(sec){
+    var s = Math.round(sec) % 86400;
+    return pad2(Math.floor(s / 3600)) + ":" + pad2(Math.floor((s % 3600) / 60)) + ":" + pad2(s % 60);
+  }
+
+  /* ---------- Lectura de entradas ---------- */
+  function readInt(input){
+    var v = input.value.trim();
+    if (v === "") return null;
+    return /^\d{1,3}$/.test(v) ? parseInt(v, 10) : NaN;
+  }
+  function parseDecimal(str){
+    var v = String(str).trim().replace(",", ".");
+    if (v === "") return null;
+    return /^\d+(\.\d*)?$/.test(v) ? parseFloat(v) : NaN;
+  }
+  function setStatus(msg){ el.status.textContent = msg || ""; }
+
+  /* ---------- Modelo de parciales ---------- */
+  function model(){
+    var D = state.distKm, p = state.paceSec;
+    var d = state.strategy === "even" ? 0 : (state.strategy === "negative" ? state.diff : -state.diff);
+    var h = D / 2, p1 = p * (1 + d), p2 = p * (1 - d), th = h * p1;
+    return {
+      D: D, p: p, h: h, p1: p1, p2: p2,
+      t: function(x){ return x <= h ? x * p1 : th + (x - h) * p2; },
+      x: function(t){ return t <= th ? t / p1 : h + (t - th) / p2; }
+    };
+  }
+  function readStart(){
+    var v = el.startTime.value;
+    if (!/^\d{2}:\d{2}$/.test(v)) return null;
+    return parseInt(v.slice(0, 2), 10) * 3600 + parseInt(v.slice(3), 10) * 60;
+  }
+
+  /* ---------- Escritura de campos derivados ---------- */
+  function writeTime(sec){
+    var s = Math.round(sec);
+    el.tH.value = String(Math.floor(s / 3600));
+    el.tM.value = pad2(Math.floor((s % 3600) / 60));
+    el.tS.value = pad2(s % 60);
+  }
+  function writePace(p){
+    var s = Math.round(p);
+    el.pM.value = String(Math.floor(s / 60));
+    el.pS.value = pad2(s % 60);
+  }
+  function clearFields(which){
+    if (which.indexOf("time") !== -1){ el.tH.value = el.tM.value = el.tS.value = ""; }
+    if (which.indexOf("pace") !== -1){ el.pM.value = el.pS.value = ""; }
+    if (which.indexOf("speed") !== -1){ el.speed.value = ""; }
+  }
+
+  /* ---------- Render ---------- */
+  function render(source){
+    var D = state.distKm, p = state.paceSec;
+    var ok = D > 0 && p > 0;
+    el.results.hidden = !ok;
+    el.emptyMsg.hidden = ok;
+    if (!ok){
+      if (!(D > 0)) clearFields(["time", "pace", "speed"]);
+      return;
+    }
+    var total = D * p;
+    if (source !== "time")  writeTime(total);
+    if (source !== "pace")  writePace(p);
+    if (source !== "speed") el.speed.value = fmtNum(3600 / p, 2, 2);
+
+    $("rTime").textContent = fmtHMS(total);
+    $("rPace").innerHTML = fmtPace(p) + '<span class="u">/km</span>';
+    $("rSpeed").innerHTML = fmtNum(3600 / p, 2, 2) + '<span class="u">km/h</span>';
+    $("rMile").innerHTML = fmtPace(p * MILE_KM) + '<span class="u">/mi</span>';
+
+    [[100, "k100"], [200, "k200"], [400, "k400"], [800, "k800"], [1000, "k1000"], [1600, "k1600"]].forEach(function(r){
+      $(r[1]).textContent = fmtTrack(p * r[0] / 1000);
+    });
+
+    renderPlan();
+    renderEquiv();
+  }
+
+  function renderPlan(){
+    var m = model(), D = state.distKm, total = D * state.paceSec, start = readStart();
+    var showClock = start !== null;
+    Array.prototype.forEach.call(document.querySelectorAll(".clockCol"), function(c){ c.hidden = !showClock; });
+
+    if (state.strategy === "even"){
+      el.planNote.textContent = "Ritmo constante de " + fmtPace(m.p) + " /km (" + fmtNum(3600 / m.p, 2, 2) + " km/h) durante los " + fmtKm(D) + " km.";
+    } else {
+      el.planNote.textContent = "1.ª mitad a " + fmtPace(m.p1) + " /km · 2.ª mitad a " + fmtPace(m.p2) + " /km. Tiempo final: " + fmtHMS(total) + ".";
+    }
+
+    // Parciales por km
+    var n = Math.ceil(D - 1e-9), html = "";
+    for (var k = 1; k <= n; k++){
+      var x0 = k - 1, x1 = Math.min(k, D);
+      var t0 = m.t(x0), t1 = m.t(x1), dt = t1 - t0, dd = x1 - x0;
+      var last = k === n;
+      var cls = last ? "finish" : (k % 5 === 0 ? "mark" : "");
+      var label = last ? fmtKm(D) + " · meta" : String(k);
+      html += '<tr class="' + cls + '"><td>' + label + "</td><td>" + fmtPace(dt / dd) + " /km</td><td>" +
+        fmtHMS(dt) + "</td><td>" + fmtHMS(t1) + "</td>" +
+        (showClock ? "<td>" + fmtClock(start + t1) + "</td>" : "") + "</tr>";
+    }
+    el.splitsBody.innerHTML = html;
+
+    // Km cada 5 minutos
+    var rows = "";
+    for (var T = 300; T < total - 1; T += 300){
+      var x = m.x(T), xp = m.x(Math.max(0, T - 300));
+      rows += "<tr><td>" + fmtHMS(T) + "</td><td>" + fmtNum(x, 2, 2) + " km</td><td>" +
+        fmtPace(300 / (x - xp)) + " /km</td>" + (showClock ? "<td>" + fmtClock(start + T) + "</td>" : "") + "</tr>";
+    }
+    rows += '<tr class="finish"><td>' + fmtHMS(total) + " · meta</td><td>" + fmtKm(D) + " km</td><td>—</td>" +
+      (showClock ? "<td>" + fmtClock(start + total) + "</td>" : "") + "</tr>";
+    el.minBody.innerHTML = rows;
+  }
+
+  var EQUIV_PACES = (function(){ var a = []; for (var s = 210; s <= 450; s += 10) a.push(s); return a; })();
+  function renderEquiv(){
+    var p = state.paceSec, nearest = -1, best = Infinity;
+    EQUIV_PACES.forEach(function(s, i){
+      var d = Math.abs(s - p);
+      if (d < best){ best = d; nearest = i; }
+    });
+    if (best > 5) nearest = -1;
+    var html = "";
+    EQUIV_PACES.forEach(function(s, i){
+      html += '<tr class="clickable' + (i === nearest ? " nearest" : "") + '" data-pace="' + s + '"><td>' + fmtPace(s) + "</td><td>" +
+        fmtNum(3600 / s, 2, 2) + "</td><td>" + fmtHMS(s * 5) + "</td><td>" + fmtHMS(s * 10) + "</td><td>" +
+        fmtHMS(s * 21.0975) + "</td><td>" + fmtHMS(s * 42.195) + "</td></tr>";
+    });
+    el.equivBody.innerHTML = html;
+  }
+
+  /* ---------- Handlers ---------- */
+  function applyPace(p, source){
+    if (!(p >= MIN_PACE && p <= MAX_PACE)){
+      setStatus("Ese valor da un ritmo fuera de rango (entre " + fmtPace(MIN_PACE) + " y " + fmtPace(MAX_PACE) + " por km).");
+      return;
+    }
+    setStatus("");
+    state.paceSec = p;
+    render(source);
+  }
+
+  function onTime(){
+    var h = readInt(el.tH), m = readInt(el.tM), s = readInt(el.tS);
+    if (isNaN(h) || isNaN(m) || isNaN(s)) return setStatus("En el tiempo usa solo números.");
+    if (h === null && m === null && s === null){ setStatus(""); return; }
+    h = h || 0; m = m || 0; s = s || 0;
+    if (m > 59 || s > 59) return setStatus("Minutos y segundos deben ser menores a 60.");
+    var t = h * 3600 + m * 60 + s;
+    if (t <= 0) return setStatus("El tiempo debe ser mayor que cero.");
+    if (!(state.distKm > 0)) return setStatus("Primero indica la distancia.");
+    applyPace(t / state.distKm, "time");
+  }
+  function onPace(){
+    var m = readInt(el.pM), s = readInt(el.pS);
+    if (isNaN(m) || isNaN(s)) return setStatus("En el ritmo usa solo números.");
+    if (m === null && s === null){ setStatus(""); return; }
+    m = m || 0; s = s || 0;
+    if (s > 59) return setStatus("Los segundos deben ser menores a 60.");
+    if (m * 60 + s <= 0) return setStatus("El ritmo debe ser mayor que cero.");
+    applyPace(m * 60 + s, "pace");
+  }
+  function onSpeed(){
+    var v = parseDecimal(el.speed.value);
+    if (v === null){ setStatus(""); return; }
+    if (isNaN(v)) return setStatus("En la velocidad usa números (ej. 12,5).");
+    if (v <= 0) return setStatus("La velocidad debe ser mayor que cero.");
+    applyPace(3600 / v, "speed");
+  }
+  function digitsOnly(input){
+    var cleaned = input.value.replace(/\D/g, "");
+    if (cleaned !== input.value) input.value = cleaned;
+  }
+  [el.tH, el.tM, el.tS].forEach(function(i){ i.addEventListener("input", function(){ digitsOnly(i); onTime(); }); });
+  [el.pM, el.pS].forEach(function(i){ i.addEventListener("input", function(){ digitsOnly(i); onPace(); }); });
+  el.speed.addEventListener("input", onSpeed);
+
+  // Distancia
+  function buildPresets(){
+    el.distChips.innerHTML = PRESETS.map(function(p){
+      return '<button type="button" class="chip" data-id="' + p.id + '" aria-pressed="' + (p.id === state.presetId) + '">' + p.label +
+        (p.km ? " · " + fmtKm(p.km) + " km" : "") + "</button>";
+    }).join("");
+  }
+  function setPreset(id){
+    var preset = PRESETS.filter(function(p){ return p.id === id; })[0];
+    if (!preset) return;
+    state.presetId = id;
+    Array.prototype.forEach.call(el.distChips.children, function(b){ b.setAttribute("aria-pressed", String(b.getAttribute("data-id") === id)); });
+    el.customDist.classList.toggle("show", id === "custom");
+    if (id === "custom"){
+      onCustom();
+      el.customKm.focus();
+    } else {
+      state.distKm = preset.km;
+      setStatus("");
+      render("dist");
+    }
+  }
+  function onCustom(){
+    var v = parseDecimal(el.customKm.value);
+    if (v === null){ state.distKm = null; setStatus(""); render("dist"); return; }
+    if (isNaN(v) || v <= 0){ state.distKm = null; setStatus("Escribe la distancia en kilómetros (ej. 12,5)."); render("dist"); return; }
+    if (v > MAX_KM){ state.distKm = null; setStatus("La distancia máxima es " + MAX_KM + " km."); render("dist"); return; }
+    state.distKm = v;
+    setStatus("");
+    render("dist");
+  }
+  el.distChips.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-id]");
+    if (b) setPreset(b.getAttribute("data-id"));
+  });
+  el.customKm.addEventListener("input", onCustom);
+
+  // Estrategia
+  el.stratChips.addEventListener("click", function(e){
+    var b = e.target.closest("button[data-strat]");
+    if (!b) return;
+    state.strategy = b.getAttribute("data-strat");
+    Array.prototype.forEach.call(el.stratChips.children, function(c){ c.setAttribute("aria-pressed", String(c === b)); });
+    el.diff.disabled = state.strategy === "even";
+    if (state.distKm > 0 && state.paceSec > 0) renderPlan();
+  });
+  el.diff.addEventListener("change", function(){
+    state.diff = parseFloat(el.diff.value);
+    if (state.distKm > 0 && state.paceSec > 0) renderPlan();
+  });
+  el.startTime.addEventListener("input", function(){
+    if (state.distKm > 0 && state.paceSec > 0) renderPlan();
+  });
+
+  // Pestañas
+  function setTab(tab){
+    state.tab = tab;
+    $("tabKm").setAttribute("aria-selected", String(tab === "km"));
+    $("tabMin").setAttribute("aria-selected", String(tab === "min"));
+    $("panelKm").hidden = tab !== "km";
+    $("panelMin").hidden = tab !== "min";
+  }
+  $("tabKm").addEventListener("click", function(){ setTab("km"); });
+  $("tabMin").addEventListener("click", function(){ setTab("min"); });
+
+  // Tabla de equivalencias
+  el.equivBody.addEventListener("click", function(e){
+    var tr = e.target.closest("tr[data-pace]");
+    if (!tr || !(state.distKm > 0)) return;
+    setStatus("");
+    state.paceSec = parseInt(tr.getAttribute("data-pace"), 10);
+    render("equiv");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // Borrar
+  $("clearBtn").addEventListener("click", function(){
+    state.paceSec = null;
+    clearFields(["time", "pace", "speed"]);
+    el.startTime.value = "";
+    setStatus("");
+    render("clear");
+    el.tM.focus();
+  });
+
+  // Copiar plan
+  $("copyBtn").addEventListener("click", function(){
+    if (!(state.distKm > 0 && state.paceSec > 0)){ el.copyMsg.textContent = "No hay un plan para copiar."; return; }
+    var m = model(), D = state.distKm, start = readStart(), n = Math.ceil(D - 1e-9);
+    var lines = ["Plan " + fmtKm(D) + " km — " + fmtHMS(D * state.paceSec) + " (" + fmtPace(state.paceSec) + " /km, " + fmtNum(3600 / state.paceSec, 2, 2) + " km/h)"];
+    for (var k = 1; k <= n; k++){
+      var x1 = Math.min(k, D), t1 = m.t(x1), dt = t1 - m.t(k - 1);
+      lines.push("Km " + (k === n ? fmtKm(D) : k) + ": " + fmtPace(dt / (x1 - (k - 1))) + " /km · acum. " + fmtHMS(t1) + (start !== null ? " · " + fmtClock(start + t1) : ""));
+    }
+    var text = lines.join("\n");
+    function done(ok){ el.copyMsg.textContent = ok ? "Plan copiado." : "No se pudo copiar."; setTimeout(function(){ el.copyMsg.textContent = ""; }, 2500); }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){ done(true); }, function(){ done(false); });
+      } else { done(false); }
+    } catch (err){ done(false); }
+  });
+
+  /* ---------- Inicio ---------- */
+  buildPresets();
+  setTab("km");
+  render("init");
+  // Mostrar los 3 campos al inicio (render("init") los escribe todos).
+})();
+</script>
+</body>
+</html>
