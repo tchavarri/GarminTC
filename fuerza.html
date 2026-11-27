@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fuerza y movilidad — Bitácora de carrera</title>
+<meta name="description" content="Programa de 12 semanas de fuerza y movilidad para corredores: glúteo medio, banda iliotibial/TFL, isquios y core, con seguimiento de sesiones y dolor.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>💪</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0F1115; --surface:#171A1F; --surface-2:#1D2127; --line:#262A31;
+    --text:#F2F3EF; --text-dim:#8B9198; --accent:#FF5A3C; --accent-soft:rgba(255,90,60,0.16);
+    --mint:#45D3A5; --mint-soft:rgba(69,211,165,0.16); --warn:#F2C94C;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; background:var(--bg); color:var(--text); font-family:'IBM Plex Sans',-apple-system,sans-serif; font-variant-numeric:tabular-nums; line-height:1.5; padding-bottom:4rem;}
+  a{color:var(--accent);}
+  h1,h2,h3{font-family:'Oswald',sans-serif; margin:0; letter-spacing:0.01em;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 1.5rem;}
+  .hero{padding:3rem 0 1.8rem; border-bottom:1px solid var(--line);}
+  .kicker{color:var(--text-dim); font-size:0.95rem; margin:0 0 0.6rem;}
+  .kicker a{color:var(--text-dim); text-decoration:none; border-bottom:1px solid var(--line);}
+  .kicker a:hover{color:var(--text); border-color:var(--text-dim);}
+  .heroTitle{font-size:clamp(2.4rem,8vw,4rem); font-weight:700; line-height:1.05;}
+  .heroTitle span{color:var(--accent);}
+  .heroSub{color:var(--text-dim); margin-top:0.7rem; font-size:1.02rem; max-width:62ch;}
+  .btn,.chip,.tabBtn{font-family:inherit; cursor:pointer; border-radius:2px; transition:border-color .15s,color .15s;}
+  .btn{background:transparent; border:1px solid var(--line); color:var(--text-dim); font-size:0.9rem; padding:0.45rem 0.9rem;}
+  .btn:hover{color:var(--text); border-color:#3a3f47;}
+  .btn.primary{background:var(--accent); border-color:var(--accent); color:var(--bg); font-weight:600;}
+  .chip{background:transparent; border:1px solid var(--line); color:var(--text-dim); font-size:0.85rem; padding:0.35rem 0.8rem;}
+  .chip:hover{color:var(--text); border-color:#3a3f47;}
+  .chip[aria-pressed="true"]{color:var(--bg); background:var(--accent); border-color:var(--accent); font-weight:600;}
+  .btn:focus-visible,.chip:focus-visible,.tabBtn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--mint); outline-offset:2px;}
+  input[type=text],input[type=number],input[type=date],input[type=url],select,textarea{background:var(--bg); border:1px solid var(--line); color:var(--text); font-family:inherit; font-size:0.95rem; padding:0.45rem 0.65rem; border-radius:2px; max-width:100%;}
+  .tabs{display:flex; gap:0.5rem; flex-wrap:wrap; margin:1.8rem 0 1.2rem;}
+  .tabBtn{background:transparent; border:1px solid var(--line); color:var(--text-dim); font-size:0.95rem; padding:0.5rem 1rem;}
+  .tabBtn[aria-selected="true"]{color:var(--text); border-color:var(--mint);}
+  .panel[hidden]{display:none;}
+  .card{border:1px solid var(--line); background:var(--surface); padding:1.2rem 1.3rem; margin-bottom:1rem;}
+  .muted{color:var(--text-dim);} .small{font-size:0.82rem;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:1rem;}
+  .grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:1rem;}
+  /* semana */
+  .weekNav{display:flex; align-items:center; gap:0.8rem; flex-wrap:wrap;}
+  .weekNav .wk{font-family:'Oswald',sans-serif; font-size:1.6rem; font-weight:600; min-width:9.5rem; text-align:center;}
+  .phaseTag{display:inline-block; font-size:0.78rem; padding:0.15rem 0.6rem; border:1px solid var(--mint); color:var(--mint); border-radius:2px; margin-left:0.4rem;}
+  .phaseTag.deload{border-color:var(--warn); color:var(--warn);}
+  .bar{height:6px; background:var(--line); margin-top:0.6rem;}
+  .bar i{display:block; height:100%; background:var(--mint); width:0;}
+  .sess h3{font-size:1.25rem;}
+  .sess .meta{color:var(--text-dim); font-size:0.85rem; margin:0.2rem 0 0.8rem;}
+  .sess.done{border-color:var(--mint);}
+  .exRow{display:flex; gap:0.7rem; align-items:flex-start; padding:0.6rem 0; border-top:1px solid var(--line);}
+  .exRow input[type=checkbox]{width:1.15rem; height:1.15rem; margin-top:0.25rem; accent-color:var(--mint); flex:none;}
+  .exRow .nm{font-weight:600;} .exRow .rx{color:var(--accent); font-family:'Oswald',sans-serif; font-size:1.02rem; white-space:nowrap;}
+  .exRow .body{flex:1; min-width:0;} .exRow .top{display:flex; justify-content:space-between; gap:0.6rem; flex-wrap:wrap;}
+  .exRow.off .nm{color:var(--text-dim); text-decoration:line-through;}
+  .btn.tech{font-size:0.8rem; padding:0.25rem 0.7rem; margin-top:0.3rem;}
+  .ov{position:fixed; inset:0; background:rgba(0,0,0,.72); z-index:50; display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding:1.2rem;}
+  .ov[hidden]{display:none;}
+  .modal{background:var(--surface); border:1px solid var(--line); width:100%; max-width:640px; padding:1.4rem; margin:auto 0;}
+  .modal h2{font-size:1.5rem;} .mHead{display:flex; justify-content:space-between; gap:1rem; align-items:flex-start;}
+  .xBtn{background:var(--surface-2); border:1px solid var(--line); color:var(--text); width:2.4rem; height:2.4rem; border-radius:50%; cursor:pointer; font-size:1.2rem; flex:none;}
+  .poses{display:flex; align-items:center; gap:0.5rem; margin:1rem 0;}
+  .poses .arrow{color:var(--text-dim);}
+  .poseBox{flex:1; background:var(--surface-2); border-radius:10px; padding:0.6rem 0.4rem 0.5rem; text-align:center; min-width:0;}
+  .poseBox svg{width:100%; height:auto; display:block;}
+  .poseBox span{display:block; color:var(--text-dim); font-size:0.72rem; letter-spacing:0.12em; margin-top:0.2rem;}
+  .secT{color:var(--text-dim); font-size:0.75rem; letter-spacing:0.1em; margin:1rem 0 0.2rem;}
+  .secT.warnT{color:var(--warn);} .modal p{margin:0;} .avoidP{color:var(--warn);}
+  .ytRow{display:flex; gap:0.7rem; align-items:center; background:var(--surface-2); padding:0.7rem 0.9rem; border-radius:10px; margin-top:1rem; text-decoration:none; color:var(--text);}
+  .ytRow:hover{background:#242932;}
+  .ytIcon{background:#E5484D; color:#fff; border-radius:6px; width:2.1rem; height:1.5rem; display:flex; align-items:center; justify-content:center; font-size:0.7rem; flex:none;}
+  .srcLinks{display:flex; gap:0.5rem; flex-wrap:wrap; margin-top:0.6rem; font-size:0.82rem; align-items:center;}
+  .srcLinks a{color:var(--text-dim);}
+  details.cue summary{cursor:pointer; color:var(--text-dim); font-size:0.82rem; margin-top:0.15rem;}
+  details.cue p{margin:0.4rem 0 0; font-size:0.88rem; color:var(--text-dim);}
+  .tagG{font-size:0.72rem; color:var(--text-dim); border:1px solid var(--line); padding:0 0.4rem; margin-left:0.4rem; border-radius:2px;}
+  .sessFoot{display:flex; gap:0.6rem; align-items:center; flex-wrap:wrap; margin-top:0.8rem;}
+  .callout{border-left:3px solid var(--warn); background:rgba(242,201,76,0.07); padding:0.8rem 1rem; margin:1rem 0; font-size:0.92rem;}
+  .callout.red{border-color:var(--accent); background:var(--accent-soft);}
+  .callout.ok{border-color:var(--mint); background:var(--mint-soft);}
+  ul.clean{margin:0.4rem 0; padding-left:1.2rem;} ul.clean li{margin:0.25rem 0;}
+  .field{display:flex; flex-direction:column; gap:0.3rem; font-size:0.82rem; color:var(--text-dim);}
+  .formRow{display:flex; gap:1rem; flex-wrap:wrap; align-items:flex-end;}
+  .range{display:flex; align-items:center; gap:0.6rem;} .range output{font-family:'Oswald',sans-serif; font-size:1.3rem; color:var(--text); min-width:1.6rem;}
+  input[type=range]{accent-color:var(--accent); width:11rem;}
+  table{width:100%; border-collapse:collapse; font-size:0.9rem;}
+  th,td{text-align:left; padding:0.5rem 0.6rem; border-bottom:1px solid var(--line);}
+  th{color:var(--text-dim); font-weight:500; font-size:0.8rem;}
+  .tableWrap{overflow-x:auto; border:1px solid var(--line);}
+  .pain3{color:var(--mint);} .pain5{color:var(--warn);} .pain7{color:var(--accent);}
+  .libFilters{display:flex; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;}
+  .vidItem{display:flex; justify-content:space-between; gap:0.8rem; padding:0.55rem 0; border-top:1px solid var(--line); align-items:center;}
+  .vidItem a{word-break:break-all;}
+  footer{margin-top:3rem; color:var(--text-dim); font-size:0.85rem;}
+  @media (max-width:760px){
+    .wrap{padding:0 1rem;} .hero{padding:2rem 0 1.4rem;}
+    .grid2,.grid3{grid-template-columns:1fr;}
+    .weekNav .wk{min-width:0; font-size:1.35rem;}
+    .exRow .rx{white-space:normal;}
+    input[type=range]{width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <p class="kicker"><a href="index.html">← Bitácora de carrera de Tomás</a> · <a href="calculadora.html">Calculadora de ritmos →</a></p>
+    <h1 class="heroTitle">Fuerza y <span>movilidad</span></h1>
+    <p class="heroSub">Programa de 12 semanas para cuidar la rodilla izquierda y la banda iliotibial desde su origen: cadera, glúteo medio, isquios y core. Pensado para sumar ~1.500 km al año (≈29 km por semana) sin pagar la cuenta en las articulaciones.</p>
+  </header>
+
+  <div class="tabs" role="tablist" aria-label="Secciones">
+    <button class="tabBtn" role="tab" id="t-plan" aria-selected="true" aria-controls="p-plan">Plan semanal</button>
+    <button class="tabBtn" role="tab" id="t-lib" aria-selected="false" aria-controls="p-lib">Biblioteca</button>
+    <button class="tabBtn" role="tab" id="t-seg" aria-selected="false" aria-controls="p-seg">Seguimiento</button>
+    <button class="tabBtn" role="tab" id="t-guia" aria-selected="false" aria-controls="p-guia">Guía y mis videos</button>
+  </div>
+
+  <!-- PLAN -->
+  <section class="panel" id="p-plan" role="tabpanel" aria-labelledby="t-plan">
+    <div class="card">
+      <div class="weekNav">
+        <button class="btn" id="prevWk" aria-label="Semana anterior">←</button>
+        <div class="wk" id="wkLabel">Semana 1 de 12</div>
+        <button class="btn" id="nextWk" aria-label="Semana siguiente">→</button>
+        <button class="btn" id="goNow">Ir a esta semana</button>
+        <span id="phaseTag" class="phaseTag"></span>
+      </div>
+      <p class="muted" id="phaseDesc" style="margin:0.8rem 0 0"></p>
+      <div class="bar" aria-hidden="true"><i id="wkBar"></i></div>
+      <p class="small muted" id="wkProg" style="margin:0.4rem 0 0"></p>
+    </div>
+
+    <div class="callout ok" id="loadNote"></div>
+
+    <div id="sessions"></div>
+
+    <div class="card">
+      <h3>Dónde ponerlo en tu semana</h3>
+      <ul class="clean small">
+        <li><b>Activación de 5 min</b> antes de tus salidas (o al menos antes de las que sean más largas o con series).</li>
+        <li><b>Sesión A y B:</b> en días de trote fácil o de descanso, nunca el día anterior a series o fondo largo. Ejemplo con 4 salidas: A el lunes, B el jueves.</li>
+        <li><b>Sesión C (movilidad):</b> después de trotar o por la noche; es suave y puede ir casi todos los días.</li>
+        <li>Semana de competencia: haz solo Activación y Movilidad, y deja las sesiones A/B para después.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- BIBLIOTECA -->
+  <section class="panel" id="p-lib" role="tabpanel" aria-labelledby="t-lib" hidden>
+    <div class="libFilters" id="libFilters" role="group" aria-label="Filtrar por grupo"></div>
+    <div id="libList"></div>
+  </section>
+
+  <!-- SEGUIMIENTO -->
+  <section class="panel" id="p-seg" role="tabpanel" aria-labelledby="t-seg" hidden>
+    <div class="card">
+      <h3>Registro de molestias</h3>
+      <p class="muted small" style="margin:0.3rem 0 1rem">0 = sin dolor · 10 = el peor imaginable. Anótalo después de entrenar o al día siguiente por la mañana.</p>
+      <div class="formRow">
+        <label class="field">Fecha<input type="date" id="pDate"></label>
+        <label class="field">Rodilla izquierda
+          <span class="range"><input type="range" id="pKnee" min="0" max="10" value="0"><output id="pKneeO">0</output></span></label>
+        <label class="field">Cadera / glúteo
+          <span class="range"><input type="range" id="pHip" min="0" max="10" value="0"><output id="pHipO">0</output></span></label>
+        <label class="field" style="flex:1; min-width:12rem">Nota (opcional)<input type="text" id="pNote" maxlength="140" placeholder="Ej.: tras 15 km, al bajar escaleras…"></label>
+        <button class="btn primary" id="pAdd">Guardar</button>
+      </div>
+      <div class="callout" id="pAlert" hidden></div>
+    </div>
+
+    <div class="card">
+      <h3>Evolución</h3>
+      <div id="painChart" style="margin-top:0.6rem"></div>
+    </div>
+
+    <div class="card">
+      <h3>Kilómetros por semana</h3>
+      <p class="muted small" style="margin:0.3rem 0 1rem">Anota tus km de cada semana del programa para ver cómo se relacionan con las molestias. Meta de referencia: ≈29 km/semana (1.500 km al año).</p>
+      <div class="formRow">
+        <label class="field">Semana del programa<select id="kmWk"></select></label>
+        <label class="field">Km corridos<input type="number" id="kmVal" min="0" max="250" step="0.1" style="width:7rem"></label>
+        <button class="btn" id="kmAdd">Guardar</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Resumen por semana</h3>
+      <div class="tableWrap" style="margin-top:0.8rem"><table>
+        <thead><tr><th>Semana</th><th>Sesiones</th><th>Km</th><th>Dolor rodilla máx.</th><th>Dolor cadera máx.</th></tr></thead>
+        <tbody id="sumBody"></tbody></table></div>
+    </div>
+
+    <div class="card">
+      <h3>Datos y respaldo</h3>
+      <div class="formRow" style="margin-top:0.6rem">
+        <label class="field">Inicio del programa (lunes)<input type="date" id="startDate"></label>
+        <button class="btn" id="exportBtn">Copiar respaldo</button>
+        <button class="btn" id="resetBtn">Borrar todo</button>
+      </div>
+      <p class="small muted" id="dataMsg" style="margin:0.6rem 0 0">Tu avance se guarda solo en este navegador y dispositivo. Si cambias de equipo, copia el respaldo.</p>
+      <textarea id="backupBox" rows="3" style="width:100%; margin-top:0.6rem" hidden aria-label="Respaldo"></textarea>
+      <div class="formRow" style="margin-top:0.6rem"><button class="btn" id="importBtn" hidden>Importar respaldo pegado</button></div>
+    </div>
+  </section>
+
+  <!-- GUIA -->
+  <section class="panel" id="p-guia" role="tabpanel" aria-labelledby="t-guia" hidden>
+    <div class="callout red">
+      <b>Detén el ejercicio y consulta a tu kinesiólogo o médico si:</b>
+      <ul class="clean">
+        <li>Sientes bloqueo, “se me sale” o falla la rodilla, o hay inflamación visible.</li>
+        <li>Dolor en reposo o de noche que no cede, o que te despierta.</li>
+        <li>Dolor que sube a 6/10 o más durante el ejercicio, o que sigue peor al día siguiente.</li>
+        <li>Dolor en el pecho, palpitaciones, mareo o desmayo al esforzarte (importante, ya que estás en tratamiento por presión).</li>
+      </ul>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h3>Semáforo del dolor</h3>
+        <ul class="clean">
+          <li><b class="pain3">0–3:</b> sigue el plan normal.</li>
+          <li><b class="pain5">4–5:</b> baja una serie o la carga, evita el trote en pendiente y revisa técnica. Mantén la movilidad.</li>
+          <li><b class="pain7">6 o más:</b> pausa la sesión de fuerza de la pierna afectada, reduce o cambia el trote y consulta.</li>
+        </ul>
+        <p class="small muted">Una molestia leve (≤3) que se calma en 24 h suele ser tolerable al fortalecer. Si aparece al correr y te hace cambiar el paso, cuenta como señal de alerta.</p>
+      </div>
+      <div class="card">
+        <h3>Cómo avanzar</h3>
+        <ul class="clean">
+          <li>Calidad antes que carga: bajar controlado en 3 segundos, rodilla alineada con el segundo dedo, pelvis nivelada.</li>
+          <li>Sube carga solo si cierras todas las series con 2 repeticiones de reserva.</li>
+          <li>Las semanas de descarga (4, 8 y 12) no son opcionales: ahí el tejido se adapta.</li>
+          <li>Haz siempre el lado izquierdo primero, y si hay diferencia, iguala las series (no “compenses” de más al lado fuerte).</li>
+        </ul>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Sobre la banda iliotibial</h3>
+      <p class="muted" style="margin:0.4rem 0 0">La banda es un tejido muy rígido y casi no se “alarga” con elongaciones. Lo que sí responde es el músculo que se inserta en ella (tensor de la fascia lata, TFL), la fuerza del glúteo medio y mayor que reparte la carga, y la movilidad de la cadera. Por eso el programa fortalece cadera y glúteo, y deja la elongación y el foam roller sobre TFL, glúteo y cuádriceps externo, sin aplastar la zona dolorosa de la rodilla. Esto complementa, no reemplaza, el trabajo con tu kinesiólogo: muéstrale este plan y ajústalo con él.</p>
+    </div>
+    <div class="card">
+      <h3>Mis videos y ejercicios favoritos</h3>
+      <p class="muted small" style="margin:0.3rem 0 1rem">Guarda aquí los enlaces de los ejercicios que ya te han servido (Fisioonline, Juan Rodado, Javier Ordieres u otros) para tenerlos junto al plan.</p>
+      <div class="formRow">
+        <label class="field" style="flex:1; min-width:10rem">Nombre<input type="text" id="vName" maxlength="80" placeholder="Ej.: Glúteo medio – Fisioonline"></label>
+        <label class="field" style="flex:2; min-width:12rem">Enlace<input type="url" id="vUrl" placeholder="https://…"></label>
+        <button class="btn primary" id="vAdd">Agregar</button>
+      </div>
+      <p class="small" id="vMsg" style="color:var(--warn); margin:0.5rem 0 0" hidden></p>
+      <div id="vList" style="margin-top:0.8rem"></div>
+    </div>
+    <div class="card">
+      <h3>Contexto de salud</h3>
+      <p class="muted small" style="margin:0.3rem 0 0">Estás tomando losartán por presión: evita los antiinflamatorios (ibuprofeno, naproxeno, diclofenaco) para el dolor de rodilla sin consultarlo con tu médico, mantén buena hidratación y cuida los esfuerzos máximos mientras se ajusta el tratamiento. Para el dolor, usa las pautas de arriba y tu kinesiólogo.</p>
+    </div>
+  </section>
+
+  <footer>
+    <p>Este plan es una guía general de ejercicio, no un diagnóstico ni indicación médica. Tu avance se guarda solo en este navegador.</p>
+    <p><a href="index.html">Bitácora de carrera</a> · <a href="calculadora.html">Calculadora de ritmos</a></p>
+  </footer>
+</div>
+
+<div class="ov" id="ov" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="mTitle" id="modal"></div></div>
+
+<script>
+(function(){
+"use strict";
+var KEY="fuerza.v1", TOTAL=12;
+var PHASES=[
+ {n:"Activar",from:1,to:4,desc:"Aprende el movimiento y despierta el glúteo medio. Tempo lento, carga baja, cero apuro. La semana 4 es de descarga."},
+ {n:"Fortalecer",from:5,to:8,desc:"Más series y más resistencia (banda más fuerte o peso). Se suman ejercicios a una pierna. La semana 8 es de descarga."},
+ {n:"Potenciar",from:9,to:12,desc:"Fuerza unilateral y control en carga, más cerca de lo que exige correr. La semana 12 es de descarga y balance."}
+];
+var DELOAD={4:1,8:1,12:1};
+var GROUPS=["Glúteo medio","Isquios","Core","Piernas","Movilidad"];
+
+/* rx: [fase1, fase2, fase3]; pose: [inicio, final] */
+var STEP=24;
+var EX={
+ clam:{n:"Almeja con banda",g:"Glúteo medio",rx:["2×15 por lado","3×15 por lado","3×20 por lado"],lab:["INICIO","ABRE"],yt:"almeja clamshell con banda gluteo medio",
+  how:"Acuéstate de lado con las caderas dobladas a unos 45° y las rodillas a 90°, con la banda sobre las rodillas y los pies juntos. Abre la rodilla de arriba como una almeja, haz una pausa de 1 segundo y baja con control.",
+  key:"Solo se mueve la rodilla: la pelvis no rueda hacia atrás. Debes sentir el trabajo en el costado del glúteo.",
+  avoid:"Que la pelvis gire hacia atrás o que los pies se separen. Si pasa, abre menos.",
+  pose:[{t:0,hd:0,L:[[-70,4,"u"],[-72,2,"u"]],A:[[14,6,"d"],[8,10,"u"]],props:[["band","k1","k2"]]},
+        {t:0,hd:0,L:[[-70,4,"u"],[-40,4,"u"]],A:[[14,6,"d"],[8,10,"u"]],props:[["band","k1","k2"]]}]},
+ bridge:{n:"Puente de glúteo",g:"Glúteo medio",rx:["2×12","3×12 (pausa 2 s)","3×10 con banda y pausa 3 s"],lab:["INICIO","ARRIBA"],yt:"puente de gluteo tecnica correcta",
+  how:"Acuéstate boca arriba con las rodillas dobladas y los pies al ancho de la cadera. Empuja con los talones y sube la pelvis hasta formar una línea entre hombros y rodillas. Aprieta el glúteo arriba y baja lento.",
+  key:"El empuje sale del glúteo: arriba, la costilla queda abajo y la zona lumbar sin arquear.",
+  avoid:"Subir tanto que se arquee la espalda baja, o que las rodillas se abran o se cierren.",
+  pose:[{t:180,hd:180,L:[[42,2,"u"],[46,2,"u"]],A:[[50,4,"u"],[52,4,"u"]]},
+        {t:162,hd:180,L:[[40,24,"u"],[44,24,"u"]],A:[[50,6,"u"],[52,6,"u"]]}]},
+ lbw:{n:"Caminata lateral con banda",g:"Glúteo medio",rx:["2×10 pasos por lado","3×12 pasos por lado","3×15 pasos, banda más fuerte"],lab:["INICIO","PASO LATERAL"],yt:"caminata lateral con banda gluteo medio",
+  how:"Con la banda sobre las rodillas o los tobillos, adopta una media sentadilla. Da pasos cortos hacia un lado y sigue con el otro pie sin juntarlos del todo, manteniendo siempre la tensión de la banda.",
+  key:"Rodillas apuntando al frente, pecho firme y tensión constante en la banda. El trabajo se siente en el costado de la cadera.",
+  avoid:"Que las rodillas colapsen hacia adentro, o inclinar el tronco para dar el paso.",
+  pose:[{t:-90,L:[[-16,84,"l"],[16,84,"r"]],A:[[-6,24,"d"],[6,24,"d"]],props:[["band","a1","a2"]]},
+        {t:-90,L:[[-16,84,"l"],[44,82,"r"]],A:[[-6,24,"d"],[6,24,"d"]],props:[["band","a1","a2"]]}]},
+ sabd:{n:"Abducción de cadera de lado",g:"Glúteo medio",rx:["2×12 por lado","3×12 por lado","3×15 con tobillera/banda"],lab:["INICIO","ARRIBA"],yt:"abduccion de cadera acostado de lado tecnica",
+  how:"Acuéstate de lado con el cuerpo en una línea. Sube la pierna de arriba con el pie ligeramente hacia abajo, sin llevarla hacia delante, y baja controlando 2 segundos.",
+  key:"Sube solo hasta donde la pelvis no se mueve; el movimiento sale del costado del glúteo.",
+  avoid:"Balancear el tronco, subir la pierna hacia el techo o que el pie apunte hacia arriba.",
+  pose:[{t:0,hd:0,L:[[-90,4,"u"],[-90,0,"u"]],A:[[14,6,"d"],[8,10,"u"]]},
+        {t:0,hd:0,L:[[-90,4,"u"],[-82,-38,"u"]],A:[[14,6,"d"],[8,10,"u"]]}]},
+ splank:{n:"Plancha lateral",g:"Glúteo medio",rx:["3×15 s (rodillas)","3×25 s (pies)","3×35 s, con elevación de pierna"],lab:["INICIO","CADERA ARRIBA"],yt:"plancha lateral tecnica correcta",
+  how:"Apóyate sobre el antebrazo con el codo bajo el hombro. Levanta la cadera hasta alinear cabeza, cadera y pies, y sostén respirando. Empieza por el lado izquierdo.",
+  key:"El cuerpo forma una línea recta; aprieta glúteo y abdomen durante todo el tiempo.",
+  avoid:"Dejar caer la cadera o rotar el pecho hacia el suelo. Si pasa, vuelve a la versión con rodillas.",
+  pose:[{t:-50,hd:-50,L:[[-88,4,"u"],[-90,2,"u"]],A:[[2,46,"l"],[2,46,"l"]]},
+        {t:-20,hd:-20,L:[[-86,32,"u"],[-88,30,"u"]],A:[[2,51,"l"],[2,51,"l"]]}]},
+ stepdn:{n:"Descenso lateral desde escalón",g:"Piernas",rx:["2×8 por lado (escalón bajo)","3×8 por lado","3×10 con peso ligero"],lab:["INICIO","ABAJO"],yt:"step down lateral escalon rodilla tecnica",
+  how:"Párate sobre un escalón con una pierna. Flexiona la rodilla de apoyo en 3 segundos mientras llevas el talón contrario hacia el suelo, toca suave y sube empujando con el talón de apoyo.",
+  key:"La rodilla sigue la línea del segundo dedo y la pelvis se mantiene nivelada.",
+  avoid:"Que la rodilla caiga hacia adentro o que la cadera se vaya hacia un lado. Si pasa, usa un escalón más bajo.",
+  pose:[{t:-90,L:[[0,92,"r"],[8,78,"r"]],A:[[4,50,"l"],[-4,50,"l"]],under:["a1",STEP]},
+        {t:-90,L:[[8,68,"r"],[16,92,"r"]],A:[[4,50,"l"],[-4,50,"l"]],under:["a1",STEP]}]},
+ hipthr:{n:"Puente a una pierna",g:"Glúteo medio",rx:["2×8 por lado","3×10 por lado","3×12 por lado, pie en banco"],lab:["INICIO","ARRIBA"],yt:"puente de gluteo a una pierna tecnica",
+  how:"Acuéstate con una rodilla doblada y la otra pierna estirada hacia arriba. Empuja con el pie apoyado y sube la pelvis hasta alinear hombros y rodilla; baja con control.",
+  key:"La pelvis se mantiene horizontal: no dejes caer el lado de la pierna libre.",
+  avoid:"Subir con la zona lumbar, o girar la pelvis. Si pasa, vuelve al puente con dos piernas.",
+  pose:[{t:180,hd:180,L:[[42,2,"u"],[82,-40,"u"]],A:[[50,4,"u"],[52,4,"u"]]},
+        {t:162,hd:180,L:[[40,24,"u"],[84,-26,"u"]],A:[[50,6,"u"],[52,6,"u"]]}]},
+ splitsq:{n:"Sentadilla dividida",g:"Piernas",rx:["2×8 por lado","3×8 por lado","3×8 con mancuernas"],lab:["INICIO","ABAJO"],yt:"sentadilla bulgara dividida tecnica correcta",
+  how:"Da una zancada larga y quédate en esa posición. Baja recto hasta que la rodilla de atrás casi roce el suelo y sube empujando con el talón de adelante.",
+  key:"El tronco permanece erguido y la rodilla delantera alineada con el pie, sin pasar mucho la punta.",
+  avoid:"Inclinar el tronco hacia adelante o que la rodilla se vaya hacia adentro.",
+  pose:[{t:-90,L:[[34,88,"r"],[-34,80,"l",50]],A:[[0,50,"l"],[2,50,"l"]],props:[["w","h1"]]},
+        {t:-90,L:[[34,60,"r"],[-34,54,"d",50]],A:[[0,50,"l"],[2,50,"l"]],props:[["w","h1"]]}]},
+ rdl:{n:"Peso muerto rumano a una pierna",g:"Isquios",rx:["2×8 por lado (sin peso)","3×8 por lado (peso ligero)","3×8 por lado (peso medio)"],lab:["INICIO","BISAGRA"],yt:"peso muerto rumano a una pierna tecnica",
+  how:"Apóyate en una pierna con la rodilla levemente flexionada. Lleva la cadera hacia atrás y el tronco hacia adelante como una bisagra, mientras la otra pierna sube en línea con la espalda. Vuelve apretando el glúteo.",
+  key:"Espalda neutra y cadera cuadrada al suelo. El movimiento sale de la cadera, no de la espalda.",
+  avoid:"Redondear la espalda o abrir la cadera hacia el lado de la pierna que sube.",
+  pose:[{t:-90,L:[[0,90,"r"],[-12,72,"l"]],A:[[6,52,"l"],[8,52,"l"]],props:[["w","h1"]]},
+        {t:8,hd:8,L:[[6,88,"r"],[-88,-14,"l"]],A:[[4,54,"l"],[6,54,"l"]],props:[["w","h1"]]}]},
+ hambr:{n:"Puente de isquios (talones)",g:"Isquios",rx:["2×10","3×10 con pausa","3×8 a una pierna"],lab:["INICIO","ARRIBA"],yt:"puente de isquios con talones tecnica",
+  how:"Acuéstate con los talones apoyados y las rodillas casi estiradas, más lejos que en el puente de glúteo. Empuja con los talones y sube la pelvis; baja lento.",
+  key:"Siente el trabajo en la parte de atrás del muslo y mantén la pelvis alineada.",
+  avoid:"Arquear la zona lumbar o subir sin controlar la bajada.",
+  pose:[{t:180,hd:180,L:[[80,2,"u",-70],[84,2,"u",-70]],A:[[50,4,"u"],[52,4,"u"]]},
+        {t:165,hd:180,L:[[78,22,"u",-70],[82,22,"u",-70]],A:[[50,6,"u"],[52,6,"u"]]}]},
+ slider:{n:"Curl de isquios con deslizador",g:"Isquios",rx:["2×6 (bajada lenta)","3×6","3×6–8, bajada de 4 s"],lab:["ARRIBA","ESTIRA"],yt:"curl de isquios con deslizador toalla",
+  how:"Desde la posición de puente, desliza los talones hacia afuera en 3–4 segundos, estirando las piernas sin perder la cadera arriba, y regresa tirando de los talones.",
+  key:"La pelvis se queda arriba durante todo el recorrido. Controla sobre todo la fase de bajada.",
+  avoid:"Dejar caer la cadera o arquear la espalda. Si pasa, desliza menos.",
+  pose:[{t:165,hd:180,L:[[46,22,"u"],[48,22,"u"]],A:[[50,6,"u"],[52,6,"u"]],props:[["slider","a1"]]},
+        {t:165,hd:180,L:[[86,22,"u"],[88,22,"u"]],A:[[50,6,"u"],[52,6,"u"]],props:[["slider","a1"]]}]},
+ nord:{n:"Nórdico asistido (opcional)",g:"Isquios",rx:["—","—","2×4 con ayuda, bajada de 4–5 s"],lab:["INICIO","BAJA LENTO"],yt:"nordic hamstring curl asistido tecnica",
+  how:"Arrodillado con los tobillos fijos y el cuerpo recto, baja el tronco hacia adelante lo más lento que puedas. Al final, apoya las manos y ayúdate para volver.",
+  key:"El cuerpo es una tabla desde las rodillas hasta la cabeza. Tu trabajo es frenar la caída.",
+  avoid:"Doblar la cadera o dejarte caer. Suma solo si no hay dolor en isquios ni en la rodilla.",
+  pose:[{t:-90,L:[[-46,46,"d"],[-48,46,"d"]],A:[[10,18,"d"],[12,18,"d"]]},
+        {t:-30,hd:-30,L:[[-86,23,"d"],[-88,23,"d"]],A:[[25,52,"l"],[27,52,"l"]]}]},
+ dead:{n:"Bicho muerto (dead bug)",g:"Core",rx:["2×8 por lado","3×10 por lado","3×12 por lado, con banda"],lab:["INICIO","EXTIENDE"],yt:"dead bug ejercicio core tecnica",
+  how:"Boca arriba, con los brazos hacia el techo y las rodillas a 90° sobre la cadera. Baja un brazo por encima de la cabeza y la pierna contraria casi hasta el suelo; vuelve y cambia.",
+  key:"La zona lumbar permanece pegada al suelo durante todo el movimiento.",
+  avoid:"Que la espalda baja se despegue. Si pasa, baja menos el brazo y la pierna.",
+  pose:[{t:180,hd:180,L:[[46,-46,"u"],[48,-46,"u"]],A:[[0,-52,"u"],[2,-52,"u"]]},
+        {t:180,hd:180,L:[[88,-8,"u"],[48,-46,"u"]],A:[[0,-52,"u"],[-48,2,"u"]]}]},
+ bird:{n:"Perro de caza (bird dog)",g:"Core",rx:["2×8 por lado","3×10 por lado (pausa 2 s)","3×10 con banda en el pie"],lab:["INICIO","EXTIENDE"],yt:"bird dog ejercicio core tecnica",
+  how:"En cuatro apoyos, con las manos bajo los hombros y las rodillas bajo las caderas. Extiende un brazo y la pierna contraria en línea con el cuerpo, haz una pausa y vuelve.",
+  key:"La pelvis y los hombros no giran: imagina llevar un vaso de agua en la espalda baja.",
+  avoid:"Arquear la espalda al subir la pierna o inclinar la cadera hacia un lado.",
+  pose:[{t:-10,hd:-10,L:[[-46,46,"d"],[-48,46,"d"]],A:[[0,56,"l"],[2,56,"l"]]},
+        {t:-10,hd:-10,L:[[-46,46,"d"],[-90,6,"l"]],A:[[0,56,"l"],[60,2,"l"]]}]},
+ pallof:{n:"Pallof press",g:"Core",rx:["2×8 por lado","3×10 por lado","3×12 por lado, de pie en una pierna"],lab:["INICIO","EXTIENDE"],yt:"pallof press tecnica core",
+  how:"Ancla la banda a un costado, a la altura del pecho. De pie y de lado al anclaje, sostén la banda frente al pecho y estira los brazos al frente resistiendo que te gire. Pausa 2 segundos y vuelve.",
+  key:"El tronco no se mueve: tu trabajo es evitar que la banda te rote.",
+  avoid:"Girar la cadera o los hombros hacia el anclaje.",
+  pose:[{t:-90,L:[[-8,90,"r"],[10,90,"r"]],A:[[16,22,"d"],[14,26,"d"]],props:[["post",-84,-50,"h1"]]},
+        {t:-90,L:[[-8,90,"r"],[10,90,"r"]],A:[[56,16,"d"],[56,18,"d"]],props:[["post",-84,-50,"h1"]]}]},
+ plank:{n:"Plancha frontal",g:"Core",rx:["3×20 s","3×30 s","3×40 s"],lab:["INICIO (rodillas)","SOSTÉN"],yt:"plancha abdominal tecnica correcta",
+  how:"Apoya antebrazos y puntas de los pies (o las rodillas al inicio) con los codos bajo los hombros. Aprieta glúteos y abdomen y sostén el cuerpo en línea recta.",
+  key:"Respira con calma. Termina la serie cuando pierdas la forma, no cuando tiemblen los brazos.",
+  avoid:"Dejar caer la cadera o levantarla demasiado.",
+  pose:[{t:-15,hd:-15,L:[[-83,7,"d"],[-85,7,"d"]],A:[[26,39,"l"],[28,39,"l"]]},
+        {t:-15,hd:-15,L:[[-88,18,"d",75],[-90,18,"d",75]],A:[[26,39,"l"],[28,39,"l"]]}]},
+ calf:{n:"Elevación de talones a una pierna",g:"Piernas",rx:["2×10 por lado","3×12 por lado","3×12 por lado, bajada 4 s"],lab:["INICIO","ARRIBA"],yt:"elevacion de talones una pierna tecnica gemelos",
+  how:"De pie sobre un escalón y sobre una pierna, sube el talón rápido y baja lento en 3–4 segundos hasta que el talón quede por debajo del escalón. Apóyate con la mano si necesitas equilibrio.",
+  key:"Sube en línea recta sobre la base del dedo grande y baja lento y completo.",
+  avoid:"Rebotar abajo o dejar que el tobillo se vaya hacia afuera.",
+  pose:[{t:-90,L:[[0,84,"r",0],[-30,64,"l"]],A:[[4,50,"l"],[6,50,"l"]]},
+        {t:-90,L:[[0,92,"r",60],[-30,64,"l"]],A:[[4,50,"l"],[6,50,"l"]]}]},
+ foam:{n:"Foam roller: glúteo, TFL y cuádriceps externo",g:"Movilidad",rx:["60–90 s por zona","60–90 s por zona","60–90 s por zona"],lab:["INICIO","RUEDA"],yt:"foam roller gluteo tfl banda iliotibial como usar",
+  how:"Siéntate sobre el rodillo apoyando el glúteo y las manos atrás. Rueda lento y detente 20–30 segundos en los puntos sensibles. Repite en el borde superior de la cadera (TFL) y en el cuádriceps.",
+  key:"Presión tolerable (hasta 5/10) y respiración tranquila. Trabaja glúteo, TFL y cuádriceps.",
+  avoid:"Aplastar la zona dolorosa de la banda hasta la rodilla, o rodar rápido sobre la articulación.",
+  pose:[{t:160,hd:180,L:[[40,24,"u"],[44,24,"u"]],A:[[10,5,"u"],[12,5,"u"]],props:[["roller",0,12,12]]},
+        {t:150,hd:180,L:[[44,24,"u"],[48,24,"u"]],A:[[10,5,"u"],[12,5,"u"]],props:[["roller",-14,12,12]]}]},
+ itbs:{n:"Inclinación lateral cruzando piernas",g:"Movilidad",rx:["2×30 s por lado","2×30 s por lado","2×40 s por lado"],lab:["INICIO","INCLINA"],yt:"estiramiento banda iliotibial de pie cruzando piernas",
+  how:"De pie, cruza la pierna afectada por detrás de la otra. Empuja la cadera hacia el lado de la pierna de atrás y estira el brazo del mismo lado por encima de la cabeza, inclinando el tronco.",
+  key:"Debes sentirlo en el costado de la cadera y el muslo, nunca como dolor en la rodilla.",
+  avoid:"Girar el tronco o rebotar. Es un estiramiento suave y sostenido.",
+  pose:[{t:-90,L:[[-6,92,"l"],[8,92,"r"]],A:[[-4,52,"l"],[4,52,"r"]]},
+        {t:-72,hd:-72,L:[[8,91,"r"],[22,90,"r"]],A:[[28,-52,"l"],[-6,30,"d"]]}]},
+ tflk:{n:"Elongación de TFL / flexor de cadera de rodillas",g:"Movilidad",rx:["2×30 s por lado","2×40 s por lado","2×40 s por lado"],lab:["INICIO","ADELANTE"],yt:"estiramiento flexor de cadera tfl de rodillas",
+  how:"En posición de caballero con la rodilla de atrás apoyada, aprieta el glúteo de esa pierna y lleva la cadera hacia adelante. Luego inclina el tronco levemente hacia el lado contrario.",
+  key:"Aprieta el glúteo de la pierna de atrás: el estiramiento se siente adelante de la cadera.",
+  avoid:"Arquear la espalda baja o dejar que la rodilla delantera pase de los dedos.",
+  pose:[{t:-90,L:[[44,46,"r"],[-46,46,"d"]],A:[[10,30,"l"],[12,30,"l"]]},
+        {t:-84,hd:-84,L:[[32,46,"r"],[-62,46,"d"]],A:[[18,-52,"l"],[12,30,"l"]]}]},
+ fig4:{n:"Figura 4 para glúteo",g:"Movilidad",rx:["2×30 s por lado","2×30 s por lado","2×40 s por lado"],lab:["INICIO","ATRAE"],yt:"estiramiento figura 4 gluteo piriforme",
+  how:"Boca arriba, apoya el tobillo de una pierna sobre la rodilla contraria. Atrae el muslo de la pierna de apoyo hacia el pecho hasta sentir el estiramiento en el glúteo profundo.",
+  key:"Mantén la cabeza apoyada y los hombros relajados.",
+  avoid:"Tirar con fuerza o forzar la rodilla hacia afuera. Debe ser un estiramiento suave.",
+  pose:[{t:180,hd:180,L:[[42,2,"u"],[26,-38,"u"]],A:[[50,4,"u"],[52,4,"u"]]},
+        {t:180,hd:180,L:[[30,-30,"u"],[16,-56,"u"]],A:[[40,-30,"u"],[42,-30,"u"]]}]},
+ hams:{n:"Elongación de isquios con banda",g:"Movilidad",rx:["2×30 s por lado","2×30 s por lado","2×40 s por lado"],lab:["INICIO","SUBE"],yt:"estiramiento isquios con banda acostado",
+  how:"Boca arriba, pasa la banda por la planta del pie y sube la pierna estirada hasta sentir tensión detrás del muslo, con la otra pierna apoyada en el suelo.",
+  key:"La rodilla se mantiene casi estirada y la pelvis pegada al suelo.",
+  avoid:"Tirar con fuerza o levantar la cadera del suelo.",
+  pose:[{t:180,hd:180,L:[[62,-64,"u"],[90,0,"u"]],A:[[34,-30,"u"],[36,-30,"u"]],props:[["band","a1","h1"]]},
+        {t:180,hd:180,L:[[14,-90,"u"],[90,0,"u"]],A:[[40,-48,"u"],[42,-48,"u"]],props:[["band","a1","h1"]]}]},
+ ninety:{n:"Rotación de cadera 90/90",g:"Movilidad",rx:["8 transiciones","10 transiciones","10 transiciones"],lab:["LADO 1","LADO 2"],yt:"rotacion de cadera 90 90 movilidad",
+  how:"Sentado con las rodillas dobladas, deja caer ambas piernas hacia un lado y pasa de manera controlada hacia el otro. Intenta mantener el tronco erguido.",
+  key:"Muévete con control; el rango se gana con las semanas.",
+  avoid:"Forzar las rodillas con dolor. Reduce el rango si molesta.",
+  pose:[{t:-90,L:[[46,2,"u"],[10,2,"u"]],A:[[-18,56,"l"],[-16,56,"l"]]},
+        {t:-90,L:[[-46,2,"u"],[-10,2,"u"]],A:[[18,56,"r"],[16,56,"r"]]}]}
+};
+/* ---------- figuras ---------- */
+var SK={torso:58,neck:20,th:46,sh:46,ua:30,fa:28,ft:12,hr:10,col:"#8DBBA8",prop:"#F2C94C"};
+var BDIR={r:[1,0],l:[-1,0],u:[0,-1],d:[0,1]};
+function rad(d){ return d*Math.PI/180; }
+function ik(p,t,l1,l2,dir){
+  var dx=t[0]-p[0],dy=t[1]-p[1],d=Math.hypot(dx,dy)||1,mx=l1+l2-0.5;
+  if(d>mx){ t=[p[0]+dx/d*mx,p[1]+dy/d*mx]; dx=t[0]-p[0]; dy=t[1]-p[1]; d=mx; }
+  var a=(l1*l1-l2*l2+d*d)/(2*d), h=Math.sqrt(Math.max(0,l1*l1-a*a)), ux=dx/d, uy=dy/d;
+  var mid=[p[0]+ux*a,p[1]+uy*a], c1=[mid[0]+h*uy,mid[1]-h*ux], c2=[mid[0]-h*uy,mid[1]+h*ux], v=BDIR[dir]||[1,0];
+  var s1=(c1[0]-mid[0])*v[0]+(c1[1]-mid[1])*v[1], s2=(c2[0]-mid[0])*v[0]+(c2[1]-mid[1])*v[1];
+  return {m:s1>=s2?c1:c2,e:t};
+}
+function figure(P){
+  var hip=[0,0], t=rad(P.t), neck=[Math.cos(t)*SK.torso,Math.sin(t)*SK.torso], hd=rad(P.hd!==undefined?P.hd:P.t);
+  var head=[neck[0]+Math.cos(hd)*(SK.neck),neck[1]+Math.sin(hd)*(SK.neck)];
+  var J={hip:hip,neck:neck,head:head}, limbs=[];
+  for(var i=0;i<2;i++){
+    var l=P.L[i], r=ik(hip,[l[0],l[1]],SK.th,SK.sh,l[2]), f=rad(l[3]||0);
+    var foot=[r.e[0]+Math.cos(f)*SK.ft,r.e[1]+Math.sin(f)*SK.ft];
+    J["k"+(i+1)]=r.m; J["a"+(i+1)]=r.e; J["f"+(i+1)]=foot;
+    var a=P.A[i], q=ik(neck,[neck[0]+a[0],neck[1]+a[1]],SK.ua,SK.fa,a[2]);
+    J["e"+(i+1)]=q.m; J["h"+(i+1)]=q.e;
+  }
+  var pts=[],k; for(k in J){ pts.push(J[k]); }
+  var ground=-1e9; ["hip","k1","k2","a1","a2","f1","f2","e1","e2","h1","h2","neck"].forEach(function(n){ if(J[n][1]>ground) ground=J[n][1]; });
+  if(head[1]+SK.hr>ground) ground=head[1]+SK.hr;
+  if(P.under) ground=J[P.under[0]][1]+P.under[1];
+  var rl=0; (P.props||[]).forEach(function(p){ if(p[0]==="roller"){ var b=p[2]+p[3]; if(b>ground) ground=b; } });
+  var minx=1e9,maxx=-1e9; pts.forEach(function(p){ if(p[0]<minx)minx=p[0]; if(p[0]>maxx)maxx=p[0]; });
+  (P.props||[]).forEach(function(p){ if(p[0]==="post"){ if(p[1]<minx)minx=p[1]; } });
+  var S=0.68, cx=(minx+maxx)/2;
+  function TX(v){ return 100+(v-cx)*S; } function TY(v){ return 148+(v-ground)*S; }
+  function X(p){ return TX(p[0]).toFixed(1)+","+TY(p[1]).toFixed(1); }
+  function line(a,b,op){ return '<polyline points="'+X(a)+' '+X(b)+'" opacity="'+op+'"/>'; }
+  function limb(a,b,c,op){ return '<polyline points="'+X(a)+' '+X(b)+' '+X(c)+'" opacity="'+op+'"/>'; }
+  var s='<svg viewBox="0 0 200 170" role="img" aria-hidden="true" focusable="false">';
+  s+='<line x1="14" x2="186" y1="'+(150-0+0)+'" y2="150" stroke="#4B5A52" stroke-width="3" stroke-linecap="round"/>';
+  if(P.under){ var sx=TX(J[P.under[0]][0]), sy=TY(J[P.under[0]][1]); s+='<rect x="'+(sx-22)+'" y="'+(sy+1)+'" width="44" height="'+(150-sy-1)+'" fill="#2A332E" stroke="#4B5A52"/>'; }
+  (P.props||[]).forEach(function(p){
+    if(p[0]==="roller") s+='<circle cx="'+TX(p[1])+'" cy="'+TY(p[2])+'" r="'+(p[3]*S)+'" fill="#2A332E" stroke="'+SK.prop+'" stroke-width="3"/>';
+    if(p[0]==="slider") s+='<ellipse cx="'+TX(J[p[1]][0])+'" cy="'+(TY(J[p[1]][1])+7)+'" rx="12" ry="3.5" fill="'+SK.prop+'"/>';
+  });
+  s+='<g fill="none" stroke="'+SK.col+'" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">';
+  s+=limb(J.hip,J.k2,J.a2,0.5)+line(J.a2,J.f2,0.5)+limb(J.neck,J.e2,J.h2,0.5);
+  s+=line(J.hip,J.neck,1)+limb(J.hip,J.k1,J.a1,1)+line(J.a1,J.f1,1)+limb(J.neck,J.e1,J.h1,1);
+  s+='<circle cx="'+TX(head[0]).toFixed(1)+'" cy="'+TY(head[1]).toFixed(1)+'" r="'+(SK.hr*S).toFixed(1)+'"/></g>';
+  (P.props||[]).forEach(function(p){
+    if(p[0]==="band") s+='<polyline points="'+X(J[p[1]])+' '+X(J[p[2]])+'" fill="none" stroke="'+SK.prop+'" stroke-width="3" stroke-dasharray="1 0"/>';
+    if(p[0]==="w"){ var h=J[p[1]]; s+='<rect x="'+(TX(h[0])-8)+'" y="'+(TY(h[1])-4)+'" width="16" height="8" rx="3" fill="'+SK.prop+'"/>'; }
+    if(p[0]==="post"){ var px=TX(J.hip[0]+p[1]), py=TY(J.hip[1]+p[2]), h2=J[p[3]];
+      s+='<line x1="'+px+'" x2="'+px+'" y1="'+(py-30)+'" y2="150" stroke="#4B5A52" stroke-width="4" stroke-linecap="round"/>'+
+         '<polyline points="'+(px)+','+py+' '+X(h2)+'" fill="none" stroke="'+SK.prop+'" stroke-width="3"/>'; }
+  });
+  return s+'</svg>';
+}
+
+var SESS=[
+ {id:"ACT",name:"Activación pre-trote",min:5,when:"Antes de salir a correr",ex:["clam","bridge","lbw"],daily:true},
+ {id:"A",name:"Sesión A · Cadera y glúteo medio",min:25,when:"Ej.: lunes",ex:["lbw","sabd","splank","stepdn","hipthr","splitsq"]},
+ {id:"B",name:"Sesión B · Isquios, core y pierna",min:25,when:"Ej.: jueves",ex:["rdl","hambr","slider","nord","dead","bird","pallof","calf"]},
+ {id:"C",name:"Sesión C · Movilidad y elongación",min:15,when:"Después de trotar o en la noche",ex:["foam","itbs","tflk","fig4","hams","ninety"]}
+];
+var ALL_SESS_PER_WEEK=["A","B","C"]; // para el progreso semanal (ACT es opcional/diaria)
+
+function phaseOf(w){ for(var i=0;i<PHASES.length;i++){ if(w>=PHASES[i].from&&w<=PHASES[i].to) return i; } return 0; }
+function esc(s){ return String(s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function $(id){ return document.getElementById(id); }
+
+/* ---------- storage ---------- */
+var mem=null, persist=true;
+function defaults(){ return {start:mondayOf(new Date()),done:{},pain:[],km:{},vids:[]}; }
+function load(){
+  try{ var raw=localStorage.getItem(KEY); if(raw){ var o=JSON.parse(raw); var d=defaults(); for(var k in d){ if(o[k]===undefined) o[k]=d[k]; } return o; } }
+  catch(e){ persist=false; }
+  return defaults();
+}
+function save(){
+  try{ localStorage.setItem(KEY,JSON.stringify(mem)); }
+  catch(e){ persist=false; $("dataMsg").textContent="No pude guardar en este navegador (modo privado o bloqueado). Tu avance durará mientras esta página siga abierta; usa “Copiar respaldo”."; }
+}
+function iso(d){ var m=d.getMonth()+1, dd=d.getDate(); return d.getFullYear()+"-"+(m<10?"0":"")+m+"-"+(dd<10?"0":"")+dd; }
+function parseIso(s){ var p=String(s).split("-"); return new Date(+p[0],+p[1]-1,+p[2]); }
+function mondayOf(d){ var x=new Date(d.getFullYear(),d.getMonth(),d.getDate()); var wd=(x.getDay()+6)%7; x.setDate(x.getDate()-wd); return iso(x); }
+function currentWeek(){
+  var diff=Math.floor((parseIso(mondayOf(new Date()))-parseIso(mem.start))/(7*86400000));
+  return Math.min(TOTAL,Math.max(1,diff+1));
+}
+function weekRange(w){ var s=parseIso(mem.start); s.setDate(s.getDate()+(w-1)*7); var e=new Date(s); e.setDate(e.getDate()+6);
+  var f=function(d){return d.getDate()+"/"+(d.getMonth()+1);}; return f(s)+" – "+f(e); }
+
+mem=load();
+var viewWk=currentWeek();
+
+/* ---------- plan ---------- */
+function sessDone(w,id){ var o=mem.done["w"+w+"-"+id]; return o&&o.all; }
+function renderPlan(){
+  var ph=PHASES[phaseOf(viewWk)], dl=!!DELOAD[viewWk];
+  $("wkLabel").textContent="Semana "+viewWk+" de "+TOTAL;
+  var tag=$("phaseTag"); tag.textContent=ph.n+(dl?" · Descarga":""); tag.className="phaseTag"+(dl?" deload":"");
+  $("phaseDesc").textContent=weekRange(viewWk)+" · "+ph.desc;
+  $("prevWk").disabled=viewWk<=1; $("nextWk").disabled=viewWk>=TOTAL;
+  var n=0; ALL_SESS_PER_WEEK.forEach(function(id){ if(sessDone(viewWk,id)) n++; });
+  $("wkBar").style.width=Math.round(n/3*100)+"%";
+  $("wkProg").textContent=n+" de 3 sesiones completadas esta semana";
+  var ln=$("loadNote");
+  ln.innerHTML=dl
+   ? "<b>Semana de descarga:</b> baja una serie en cada ejercicio y mantén el mismo tempo lento. Es la semana en que el cuerpo asimila el trabajo."
+   : "<b>Carga y kilómetros:</b> si esta semana corres sobre ~30 km o tienes series/fondo largo, mantén A y B con la carga indicada pero sin llegar al fallo. Si tus piernas llegan pesadas, deja solo Activación y Movilidad.";
+  ln.className="callout "+(dl?"":"ok");
+  var html="";
+  SESS.forEach(function(s){
+    var key="w"+viewWk+"-"+s.id, st=mem.done[key]||{ex:{},all:false};
+    var cnt=0; s.ex.forEach(function(e){ if(st.ex&&st.ex[e]) cnt++; });
+    var isNord=function(e){return e==="nord"&&phaseOf(viewWk)<2;};
+    var exs=s.ex.filter(function(e){return !isNord(e);});
+    html+='<div class="card sess'+(st.all?' done':'')+'" data-sess="'+s.id+'"><h3>'+esc(s.name)+'</h3>'+
+      '<div class="meta">~'+s.min+' min · '+esc(s.when)+(s.daily?' · opcional todos los días':'')+'</div>';
+    exs.forEach(function(e){
+      var x=EX[e], on=st.ex&&st.ex[e], rx=x.rx[phaseOf(viewWk)];
+      if(dl&&x.g!=="Movilidad"&&rx!=="—") rx=rx+" (−1 serie)";
+      html+='<div class="exRow'+(on?' off':'')+'"><input type="checkbox" data-ex="'+e+'" id="c-'+s.id+'-'+e+'"'+(on?' checked':'')+' aria-label="Hecho: '+esc(x.n)+'">'+
+        '<div class="body"><div class="top"><label for="c-'+s.id+'-'+e+'" class="nm">'+esc(x.n)+'<span class="tagG">'+esc(x.g)+'</span></label><span class="rx">'+esc(rx)+'</span></div>'+
+        '<button class="btn tech" data-info="'+e+'">Ver técnica ilustrada</button></div></div>';
+    });
+    html+='<div class="sessFoot"><button class="btn'+(st.all?'':' primary')+'" data-all="'+s.id+'">'+(st.all?'Marcar como pendiente':'Marcar sesión completa')+'</button>'+
+      '<span class="small muted">'+(st.date?'Hecha el '+esc(st.date):'')+'</span></div></div>';
+  });
+  $("sessions").innerHTML=html;
+}
+$("sessions").addEventListener("change",function(ev){
+  var t=ev.target; if(!t.dataset||!t.dataset.ex) return;
+  var sid=t.closest("[data-sess]").dataset.sess, key="w"+viewWk+"-"+sid;
+  var st=mem.done[key]||(mem.done[key]={ex:{},all:false});
+  st.ex[t.dataset.ex]=t.checked; save(); renderPlan(); renderSummary();
+});
+$("sessions").addEventListener("click",function(ev){
+  var b=ev.target.closest("[data-all]"); if(!b) return;
+  var sid=b.dataset.all, key="w"+viewWk+"-"+sid, st=mem.done[key]||(mem.done[key]={ex:{},all:false});
+  st.all=!st.all; st.date=st.all?iso(new Date()):"";
+  if(st.all){ var s=SESS.filter(function(z){return z.id===sid;})[0]; s.ex.forEach(function(e){ st.ex[e]=true; }); }
+  save(); renderPlan(); renderSummary();
+});
+$("prevWk").addEventListener("click",function(){ if(viewWk>1){viewWk--; renderPlan();} });
+$("nextWk").addEventListener("click",function(){ if(viewWk<TOTAL){viewWk++; renderPlan();} });
+$("goNow").addEventListener("click",function(){ viewWk=currentWeek(); renderPlan(); });
+
+/* ---------- biblioteca ---------- */
+var libGroup="Todos";
+function renderLib(){
+  var fl=$("libFilters"), h="";
+  ["Todos"].concat(GROUPS).forEach(function(g){ h+='<button class="chip" data-g="'+g+'" aria-pressed="'+(g===libGroup)+'">'+g+'</button>'; });
+  fl.innerHTML=h;
+  var out="";
+  Object.keys(EX).forEach(function(k){
+    var x=EX[k]; if(libGroup!=="Todos"&&x.g!==libGroup) return;
+    out+='<div class="card"><div class="top" style="display:flex;justify-content:space-between;gap:.6rem;flex-wrap:wrap"><h3>'+esc(x.n)+'</h3><span class="tagG">'+esc(x.g)+'</span></div>'+
+      '<p class="muted" style="margin:.5rem 0">'+esc(x.how)+'</p><button class="btn tech" data-info="'+k+'" style="margin-bottom:.8rem">Ver técnica ilustrada</button>'+
+      '<table><thead><tr><th>Fase 1 · Activar</th><th>Fase 2 · Fortalecer</th><th>Fase 3 · Potenciar</th></tr></thead><tbody><tr><td>'+esc(x.rx[0])+'</td><td>'+esc(x.rx[1])+'</td><td>'+esc(x.rx[2])+'</td></tr></tbody></table></div>';
+  });
+  $("libList").innerHTML=out;
+}
+$("libFilters").addEventListener("click",function(ev){ var b=ev.target.closest("[data-g]"); if(!b) return; libGroup=b.dataset.g; renderLib(); });
+
+/* ---------- dolor / km ---------- */
+function bindRange(r,o){ $(r).addEventListener("input",function(){ $(o).textContent=$(r).value; }); }
+bindRange("pKnee","pKneeO"); bindRange("pHip","pHipO");
+$("pDate").value=iso(new Date());
+$("pAdd").addEventListener("click",function(){
+  var d=$("pDate").value||iso(new Date());
+  mem.pain.push({d:d,k:+$("pKnee").value,h:+$("pHip").value,n:$("pNote").value.trim().slice(0,140)});
+  mem.pain.sort(function(a,b){return a.d<b.d?-1:a.d>b.d?1:0;});
+  $("pNote").value=""; save(); renderPain(); renderSummary();
+  var k=+$("pKnee").value, a=$("pAlert");
+  if(k>=6){ a.hidden=false; a.className="callout red"; a.textContent="Rodilla en "+k+"/10: pausa la fuerza de esa pierna, reduce el trote y consulta con tu kinesiólogo."; }
+  else if(k>=4){ a.hidden=false; a.className="callout"; a.textContent="Rodilla en "+k+"/10: baja una serie o la carga, evita pendientes y vigila cómo amaneces mañana."; }
+  else { a.hidden=true; }
+});
+function renderPain(){
+  var p=mem.pain.slice(-24), el=$("painChart");
+  if(!p.length){ el.innerHTML='<p class="muted small">Aún no hay registros.</p>'; return; }
+  var W=640,H=180,pl=28,pr=10,pt=10,pb=22, n=p.length;
+  var x=function(i){ return n===1?(pl+(W-pl-pr)/2):pl+i*(W-pl-pr)/(n-1); };
+  var y=function(v){ return pt+(10-v)*(H-pt-pb)/10; };
+  var s='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Evolución del dolor de rodilla y cadera de 0 a 10">';
+  [0,3,6,10].forEach(function(v){ s+='<line x1="'+pl+'" x2="'+(W-pr)+'" y1="'+y(v)+'" y2="'+y(v)+'" stroke="#262A31"/><text x="4" y="'+(y(v)+4)+'" fill="#8B9198" font-size="11">'+v+'</text>'; });
+  var line=function(key,col){ var pts=p.map(function(r,i){return x(i)+","+y(r[key]);}).join(" ");
+    var o='<polyline fill="none" stroke="'+col+'" stroke-width="2.5" points="'+pts+'"/>';
+    p.forEach(function(r,i){ o+='<circle cx="'+x(i)+'" cy="'+y(r[key])+'" r="3.5" fill="'+col+'"/>'; }); return o; };
+  s+=line("h","#F2C94C")+line("k","#FF5A3C");
+  s+='<text x="'+pl+'" y="'+(H-5)+'" fill="#8B9198" font-size="11">'+esc(p[0].d)+'</text><text x="'+(W-pr)+'" y="'+(H-5)+'" fill="#8B9198" font-size="11" text-anchor="end">'+esc(p[n-1].d)+'</text></svg>';
+  s+='<p class="small muted" style="margin:.4rem 0 0"><span style="color:#FF5A3C">●</span> Rodilla izquierda &nbsp; <span style="color:#F2C94C">●</span> Cadera / glúteo</p>';
+  var rows=p.slice().reverse().slice(0,8).map(function(r){ var c=r.k>=6?"pain7":r.k>=4?"pain5":"pain3";
+    return '<tr><td>'+esc(r.d)+'</td><td class="'+c+'">'+r.k+'</td><td>'+r.h+'</td><td>'+esc(r.n||"")+'</td></tr>'; }).join("");
+  s+='<div class="tableWrap" style="margin-top:.8rem"><table><thead><tr><th>Fecha</th><th>Rodilla</th><th>Cadera</th><th>Nota</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  el.innerHTML=s;
+}
+function fillKmSelect(){ var h=""; for(var i=1;i<=TOTAL;i++) h+='<option value="'+i+'">Semana '+i+'</option>'; $("kmWk").innerHTML=h; $("kmWk").value=String(currentWeek()); }
+$("kmAdd").addEventListener("click",function(){
+  var v=parseFloat($("kmVal").value); if(isNaN(v)||v<0||v>250) return;
+  mem.km["w"+$("kmWk").value]=v; save(); renderSummary();
+});
+function renderSummary(){
+  var h="";
+  for(var w=1;w<=TOTAL;w++){
+    var ses=0; ALL_SESS_PER_WEEK.forEach(function(id){ if(sessDone(w,id)) ses++; });
+    var s=parseIso(mem.start); s.setDate(s.getDate()+(w-1)*7); var e=new Date(s); e.setDate(e.getDate()+6);
+    var ks=-1,hs=-1,any=false;
+    mem.pain.forEach(function(r){ var d=parseIso(r.d); if(d>=s&&d<=e){ any=true; if(r.k>ks)ks=r.k; if(r.h>hs)hs=r.h; } });
+    var km=mem.km["w"+w];
+    h+='<tr><td>'+w+(DELOAD[w]?' <span class="muted small">(descarga)</span>':'')+'</td><td>'+ses+'/3</td><td>'+(km!==undefined?String(km).replace(".",","):"—")+'</td><td>'+(any?ks:"—")+'</td><td>'+(any?hs:"—")+'</td></tr>';
+  }
+  $("sumBody").innerHTML=h;
+}
+
+/* ---------- datos ---------- */
+$("startDate").value=mem.start;
+$("startDate").addEventListener("change",function(){ var v=$("startDate").value; if(!v) return; mem.start=mondayOf(parseIso(v)); $("startDate").value=mem.start; save(); viewWk=currentWeek(); renderPlan(); renderSummary(); });
+$("exportBtn").addEventListener("click",function(){
+  var box=$("backupBox"); box.hidden=false; $("importBtn").hidden=false; box.value=JSON.stringify(mem); box.select();
+  try{ if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(box.value).then(function(){ $("dataMsg").textContent="Respaldo copiado. Pégalo en otro equipo con “Importar”."; },function(){}); } }catch(e){}
+});
+$("importBtn").addEventListener("click",function(){
+  try{ var o=JSON.parse($("backupBox").value); if(!o||typeof o!=="object"||!o.start||!o.done) throw 0;
+    var d=defaults(); for(var k in d){ if(o[k]===undefined) o[k]=d[k]; } mem=o; save(); viewWk=currentWeek();
+    $("startDate").value=mem.start; renderAll(); $("dataMsg").textContent="Respaldo importado.";
+  }catch(e){ $("dataMsg").textContent="El texto pegado no es un respaldo válido."; }
+});
+$("resetBtn").addEventListener("click",function(){
+  if(!window.confirm("¿Borrar sesiones, dolor, kilómetros y videos guardados?")) return;
+  mem=defaults(); save(); viewWk=currentWeek(); $("startDate").value=mem.start; renderAll();
+});
+
+/* ---------- videos ---------- */
+function safeUrl(u){ try{ var x=new URL(u); return (x.protocol==="http:"||x.protocol==="https:")?x.href:null; }catch(e){ return null; } }
+function renderVids(){
+  var el=$("vList");
+  if(!mem.vids.length){ el.innerHTML='<p class="muted small">Todavía no hay enlaces guardados.</p>'; return; }
+  el.innerHTML=mem.vids.map(function(v,i){
+    return '<div class="vidItem"><div><b>'+esc(v.n)+'</b><br><a href="'+esc(v.u)+'" target="_blank" rel="noopener noreferrer">'+esc(v.u)+'</a></div><button class="btn" data-del="'+i+'" aria-label="Quitar '+esc(v.n)+'">Quitar</button></div>';
+  }).join("");
+}
+$("vAdd").addEventListener("click",function(){
+  var n=$("vName").value.trim(), u=safeUrl($("vUrl").value.trim()), m=$("vMsg");
+  if(!n||!u){ m.hidden=false; m.textContent="Escribe un nombre y un enlace válido que empiece con http:// o https://"; return; }
+  m.hidden=true; mem.vids.push({n:n.slice(0,80),u:u}); $("vName").value=""; $("vUrl").value=""; save(); renderVids();
+});
+$("vList").addEventListener("click",function(ev){ var b=ev.target.closest("[data-del]"); if(!b) return; mem.vids.splice(+b.dataset.del,1); save(); renderVids(); });
+
+
+/* ---------- detalle ilustrado ---------- */
+var lastFocus=null;
+function openEx(k){
+  var x=EX[k]; if(!x) return; lastFocus=document.activeElement;
+  var ph=phaseOf(viewWk);
+  var q=function(extra){ return "https://www.youtube.com/results?search_query="+encodeURIComponent(x.yt+(extra?" "+extra:"")); };
+  var h='<div class="mHead"><h2 id="mTitle">'+esc(x.n)+'</h2><button class="xBtn" id="xClose" aria-label="Cerrar">✕</button></div>'+
+   '<div class="poses"><div class="poseBox">'+figure(x.pose[0])+'<span>'+esc(x.lab[0])+'</span></div><div class="arrow" aria-hidden="true">›</div><div class="poseBox">'+figure(x.pose[1])+'<span>'+esc(x.lab[1])+'</span></div></div>'+
+   '<div class="secT">DOSIS · FASE '+(ph+1)+' (' +esc(PHASES[ph].n.toUpperCase())+')</div><p>'+esc(x.rx[ph])+'</p>'+
+   '<div class="secT">CÓMO SE HACE</div><p>'+esc(x.how)+'</p>'+
+   '<div class="secT">PUNTO CLAVE</div><p>'+esc(x.key)+'</p>'+
+   '<div class="secT warnT">EVITA ESTO</div><p class="avoidP">'+esc(x.avoid)+'</p>'+
+   '<a class="ytRow" href="'+q("")+'" target="_blank" rel="noopener noreferrer"><span class="ytIcon">▶</span><span><b>Buscar video en YouTube</b><br><span class="muted small">'+esc(x.yt)+'</span></span></a>'+
+   '<div class="srcLinks"><span class="muted">También con:</span><a href="'+q("fisioonline")+'" target="_blank" rel="noopener noreferrer">Fisioonline</a><a href="'+q("juan rodado")+'" target="_blank" rel="noopener noreferrer">Juan Rodado</a><a href="'+q("javier ordieres")+'" target="_blank" rel="noopener noreferrer">Javier Ordieres</a></div>';
+  $("modal").innerHTML=h; $("ov").hidden=false; document.body.style.overflow="hidden"; $("xClose").focus();
+}
+function closeEx(){ $("ov").hidden=true; document.body.style.overflow=""; if(lastFocus&&lastFocus.focus) lastFocus.focus(); }
+$("ov").addEventListener("click",function(ev){ if(ev.target===$("ov")||ev.target.id==="xClose") closeEx(); });
+document.addEventListener("keydown",function(ev){ if(ev.key==="Escape"&&!$("ov").hidden) closeEx(); });
+$("sessions").addEventListener("click",function(ev){ var b=ev.target.closest("[data-info]"); if(b) openEx(b.dataset.info); });
+$("libList").addEventListener("click",function(ev){ var b=ev.target.closest("[data-info]"); if(b) openEx(b.dataset.info); });
+
+/* ---------- tabs ---------- */
+var tabs=["plan","lib","seg","guia"];
+function showTab(id){
+  tabs.forEach(function(t){ var on=t===id; $("t-"+t).setAttribute("aria-selected",on); $("p-"+t).hidden=!on; });
+}
+tabs.forEach(function(t){ $("t-"+t).addEventListener("click",function(){ showTab(t); }); });
+
+function renderAll(){ renderPlan(); renderLib(); renderPain(); fillKmSelect(); renderSummary(); renderVids(); }
+renderAll();
+})();
+</script>
+</body>
+</html>
